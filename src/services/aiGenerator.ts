@@ -4,9 +4,11 @@ export async function generateMagazineContent(
   input: ArticleInput,
   config: AIConfig
 ): Promise<DualLanguageContent> {
-  if (config.provider === 'gemini' && config.apiKey) {
+  const geminiKey = config.apiKey || (import.meta.env.VITE_GEMINI_API_KEY as string);
+
+  if (config.provider === 'gemini' && geminiKey) {
     try {
-      return await generateWithGemini(input, config.apiKey);
+      return await generateWithGemini(input, geminiKey);
     } catch (err) {
       console.warn('Gemini API call failed, falling back to embedded AI engine:', err);
       return generateWithBuiltinAI(input);
