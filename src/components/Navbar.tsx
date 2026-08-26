@@ -35,8 +35,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Flame className="w-6 h-6 text-red-100 animate-pulse" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-wider metal-red-title flex items-center gap-2">
-              EGYPTSLAYER <span className="text-xs px-2 py-0.5 rounded bg-red-950 border border-red-800 text-red-400 font-mono tracking-normal">{t.navbar.magazineBadge}</span>
+            <h1 className="text-2xl font-black tracking-wider flex items-center gap-2">
+              <span className="metal-red-title">EGYPTSLAYER</span>
+              <span className="text-xs px-2 py-0.5 rounded bg-red-950 border border-red-800 text-red-400 font-mono tracking-normal [webkit-text-fill-color:initial]">
+                {t.navbar.magazineBadge}
+              </span>
             </h1>
             <p className="text-[10px] text-slate-400 uppercase tracking-widest font-mono">
               {t.navbar.brandSubtitle}
