@@ -11,7 +11,16 @@ export async function exportMagazineToPDF(
     throw new Error(`Magazine render container (#${containerId}) was not found in the DOM.`);
   }
 
-  onProgress?.(10, 'Preparing magazine layout for high-res PDF rendering...');
+  onProgress?.(10, 'Preparing magazine layout & loading web fonts...');
+
+  // Ensure fonts (especially Arabic Cairo / Amiri) are fully loaded before html2canvas render
+  if (document.fonts) {
+    try {
+      await document.fonts.ready;
+    } catch (e) {
+      console.warn('Font loading check passed with fallback readiness.');
+    }
+  }
 
   // Find all page elements inside the container
   let pageElements = Array.from(container.querySelectorAll<HTMLElement>('.magazine-page-render'));
@@ -20,9 +29,9 @@ export async function exportMagazineToPDF(
     pageElements = [container];
   }
 
-  // Initialize PDF in landscape A4 mode (Double page spread)
+  // Item 1: Initialize PDF in PORTRAIT A4 mode
   const pdf = new jsPDF({
-    orientation: 'landscape',
+    orientation: 'portrait',
     unit: 'mm',
     format: 'a4',
   });
@@ -33,37 +42,37 @@ export async function exportMagazineToPDF(
   for (let i = 0; i < pageElements.length; i++) {
     const pageEl = pageElements[i];
     const progressPercent = Math.round(15 + ((i + 1) / pageElements.length) * 80);
-    onProgress?.(progressPercent, `Rendering Page Spread ${i + 1} of ${pageElements.length}...`);
+    onProgress?.(progressPercent, `Rendering PDF Portrait Page ${i + 1} of ${pageElements.length}...`);
 
     try {
+      // Item 2: Render canvas with pure white background (#ffffff)
       const canvas = await html2canvas(pageEl, {
-        scale: 2, // High resolution output
+        scale: 2.5, // High resolution crisp text output
         useCORS: true,
-        allowTaint: false, // Prevents security error on tainted canvas
-        backgroundColor: '#0a0a0c',
+        allowTaint: false,
+        backgroundColor: '#ffffff',
         logging: false,
-        imageTimeout: 10000,
+        imageTimeout: 15000,
         ignoreElements: (element) => element.classList.contains('no-export'),
       });
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
       if (i > 0) {
-        pdf.addPage([pdfWidth, pdfHeight], 'landscape');
+        pdf.addPage([pdfWidth, pdfHeight], 'portrait');
       }
 
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
     } catch (renderErr) {
       console.warn(`Page ${i + 1} rendering warning, attempting fallback render:`, renderErr);
-      // Fallback: render without CORS strictness if an image fails
       const fallbackCanvas = await html2canvas(pageEl, {
-        scale: 1.5,
+        scale: 1.8,
         useCORS: false,
         allowTaint: true,
-        backgroundColor: '#0a0a0c',
+        backgroundColor: '#ffffff',
       });
-      const imgData = fallbackCanvas.toDataURL('image/jpeg', 0.85);
-      if (i > 0) pdf.addPage([pdfWidth, pdfHeight], 'landscape');
+      const imgData = fallbackCanvas.toDataURL('image/jpeg', 0.88);
+      if (i > 0) pdf.addPage([pdfWidth, pdfHeight], 'portrait');
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
     }
   }

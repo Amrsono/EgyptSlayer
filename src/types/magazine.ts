@@ -21,6 +21,14 @@ export interface BandMetadata {
   lineup: string[];
 }
 
+export type PageLayoutType = 
+  | 'wide-header'          // صورة عريضة للمقالة و تحتها عامودين
+  | 'tall-right'           // صورة طولية يمين و تحتها و جنبها العواميد
+  | 'tall-left'            // صورة طولية شمال تحتها و جنبها العواميد
+  | 'columns-only'         // عواميد كتابة فقط
+  | 'full-image'           // صورة طولية بملىء الصفحة فقط
+  | 'image-above-title';   // صورة بعرض الصفحة فى اعلى الوسط و تحتها العنوان و تحتها العواميد
+
 export interface ArticleInput {
   titleArabic: string;
   textArabic: string;
@@ -33,6 +41,7 @@ export interface ArticleInput {
   logoUrl: string | null;
   albumArtUrl: string | null;
   fillerArtUrls: string[]; // List of page separator image URLs
+  layoutStyle?: PageLayoutType;
 }
 
 export interface DualLanguageContent {

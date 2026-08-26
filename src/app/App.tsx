@@ -157,16 +157,17 @@ export function App() {
           </div>
         )}
 
-        {/* OFFSCREEN FULL MAGAZINE RENDER CONTAINER FOR HIGH-RES PDF EXPORT FROM ANY TAB */}
+        {/* OFFSCREEN FULL MAGAZINE RENDER CONTAINER FOR HIGH-RES PORTRAIT PDF EXPORT FROM ANY TAB */}
         {generatedContent && (
           <div
             id="magazine-export-hidden-container"
-            className="fixed -left-[9999px] top-0 w-[1200px] pointer-events-none opacity-100 z-[-100] space-y-12"
+            className="fixed -left-[9999px] top-0 w-[800px] pointer-events-none opacity-100 z-[-100] space-y-12 bg-white"
           >
             <MagazineSpread
               content={generatedContent}
               input={articleInput}
               pageType="article-1"
+              pageNumber={1}
             />
             {articleInput.fillerArtUrls.map((url, idx) => (
               <MagazineSpread
@@ -175,6 +176,7 @@ export function App() {
                 input={articleInput}
                 pageType="filler"
                 fillerImageUrl={url}
+                pageNumber={idx + 2}
               />
             ))}
           </div>

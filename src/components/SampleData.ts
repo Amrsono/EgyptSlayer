@@ -19,5 +19,6 @@ export const SAMPLE_METAL_ARTICLE: ArticleInput = {
     'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80'
-  ]
+  ],
+  layoutStyle: 'wide-header'
 };

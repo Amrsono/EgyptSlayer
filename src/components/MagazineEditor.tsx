@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ArticleInput } from '../types/magazine';
-import { Upload, Sparkles, Image as ImageIcon, Music, Trash2, Plus, Flame, FileText, Globe } from 'lucide-react';
+import { ArticleInput, PageLayoutType } from '../types/magazine';
+import { Upload, Sparkles, Image as ImageIcon, Music, Trash2, Plus, Flame, FileText, Globe, LayoutGrid } from 'lucide-react';
 
 interface MagazineEditorProps {
   input: ArticleInput;
@@ -8,6 +8,45 @@ interface MagazineEditorProps {
   onGenerate: () => void;
   isGenerating: boolean;
 }
+
+const LAYOUT_OPTIONS: { id: PageLayoutType; titleAr: string; titleEn: string; description: string }[] = [
+  {
+    id: 'wide-header',
+    titleAr: 'صورة عريضة و تحتها عامودين',
+    titleEn: 'Wide Top Banner + 2 Columns',
+    description: 'صورة بعرض المقال في الأعلى يتبعها أعمدة النص العربي والإنجليزي'
+  },
+  {
+    id: 'image-above-title',
+    titleAr: 'صورة بعرض الصفحة ثم العنوان والأعمدة',
+    titleEn: 'Full Width Image Top -> Title -> Columns',
+    description: 'صورة في أعلى المنتصف يليها العنوان الرئيسي ثم أعمدة النصوص'
+  },
+  {
+    id: 'tall-right',
+    titleAr: 'صورة طولية يمين مع أعمدة',
+    titleEn: 'Tall Portrait Image Right',
+    description: 'صورة رأسية في الجهة اليمنى تحيط بها أعمدة القراءة'
+  },
+  {
+    id: 'tall-left',
+    titleAr: 'صورة طولية شمال مع أعمدة',
+    titleEn: 'Tall Portrait Image Left',
+    description: 'صورة رأسية في الجهة اليسرى تحيط بها أعمدة القراءة'
+  },
+  {
+    id: 'columns-only',
+    titleAr: 'عواميد كتابة فقط',
+    titleEn: 'Columns Text Only',
+    description: 'تنسيق مجلة كلاسيكي بدون صور داخلية (نصوص قراءة فقط)'
+  },
+  {
+    id: 'full-image',
+    titleAr: 'صورة طولية بملىء الصفحة فقط',
+    titleEn: 'Full Page Portrait Artwork',
+    description: 'صفحة صورة كاملة بدون نصوص جانبية'
+  }
+];
 
 export const MagazineEditor: React.FC<MagazineEditorProps> = ({
   input,
@@ -165,6 +204,53 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
                 placeholder="اكتب هنا تفاصيل الفرقة، مراجعة الألبوم، تاريخ الحفلات، والملاحظات الخاصة بالمقال..."
                 className="w-full bg-metal-950 border border-metal-800 rounded-lg p-3 text-sm font-arabic text-slate-200 leading-relaxed focus:border-red-600 outline-none resize-y"
               />
+            </div>
+          </div>
+
+          {/* Page Layout Structure Selector (Item 9 Requirement) */}
+          <div className="metal-border p-6 rounded-2xl space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                <LayoutGrid className="w-4 h-4 text-red-500" /> اختيار شكل الصفحة بالمقال (Page Layout Options)
+              </h3>
+              <span className="text-[10px] text-slate-400 font-mono">6 Presets</span>
+            </div>
+
+            <p className="text-xs text-slate-300 font-arabic">
+              اختر شكل تصميم الصفحة المطلوب لعرض المقال والأعمدة والصور:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              {LAYOUT_OPTIONS.map((opt) => {
+                const isSelected = (input.layoutStyle || 'wide-header') === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => handleInputChange('layoutStyle', opt.id)}
+                    className={`p-3.5 rounded-xl border text-right transition-all flex flex-col justify-between gap-2.5 ${
+                      isSelected
+                        ? 'border-red-600 bg-red-950/70 shadow-metal-glow ring-2 ring-red-500/50'
+                        : 'border-metal-800 bg-metal-950/80 hover:border-slate-600'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start w-full">
+                      <span className="text-xs font-bold font-arabic text-amber-200 leading-snug">
+                        {opt.titleAr}
+                      </span>
+                      <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                        isSelected ? 'border-red-500 bg-red-600' : 'border-slate-600'
+                      }`}>
+                        {isSelected && <span className="w-1.5 h-1.5 bg-white rounded-full" />}
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-sans">{opt.titleEn}</p>
+                    <p className="text-[11px] text-slate-300 font-arabic leading-relaxed">
+                      {opt.description}
+                    </p>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

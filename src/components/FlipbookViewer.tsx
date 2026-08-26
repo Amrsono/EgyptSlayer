@@ -189,6 +189,7 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
             input={input}
             pageType={currentSpread.type}
             fillerImageUrl={currentSpread.fillerUrl}
+            pageNumber={currentPage + 1}
           />
         </div>
 
