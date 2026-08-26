@@ -119,7 +119,6 @@ export function App() {
         isExporting={isExporting}
         aiConfig={aiConfig}
         setAiConfig={setAiConfig}
-        onLoadSample={loadSampleData}
         onOpenCeoDrawer={() => setIsCeoDrawerOpen(true)}
       />
 

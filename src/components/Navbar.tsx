@@ -10,7 +10,6 @@ interface NavbarProps {
   isExporting: boolean;
   aiConfig: AIConfig;
   setAiConfig: (config: AIConfig) => void;
-  onLoadSample: () => void;
   onOpenCeoDrawer: () => void;
 }
 
@@ -21,7 +20,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   isExporting,
   aiConfig,
   setAiConfig,
-  onLoadSample,
   onOpenCeoDrawer
 }) => {
   const [showSettings, setShowSettings] = useState(false);
@@ -120,14 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>{language === 'en' ? 'العربية' : 'English'}</span>
           </button>
 
-          <button
-            onClick={onLoadSample}
-            title="Load Metal Band Sample Data"
-            className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-metal-850 hover:bg-metal-800 text-slate-300 border border-slate-700 transition-all"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-amber-400" />
-            {t.navbar.demoData}
-          </button>
+
 
           <button
             onClick={() => setShowSettings(!showSettings)}
