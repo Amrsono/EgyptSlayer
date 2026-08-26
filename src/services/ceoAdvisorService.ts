@@ -10,8 +10,9 @@ export interface CeoAdviceParams {
 }
 
 const GEMINI_MODELS = [
+  'gemini-3.6-flash',
+  'gemini-2.5-flash',
   'gemini-1.5-flash-latest',
-  'gemini-2.0-flash',
   'gemini-1.5-flash',
   'gemini-1.5-pro',
   'gemini-pro'
@@ -82,9 +83,14 @@ Instructions for your response:
 
         if (data?.error) {
           lastApiError = data.error;
-          // If error is not a 404 model name issue, stop retrying
           const msg = (data.error.message || '').toLowerCase();
-          if (!msg.includes('not found') && !msg.includes('not supported')) {
+          const isModelUnavailable =
+            msg.includes('not found') ||
+            msg.includes('not supported') ||
+            msg.includes('no longer available') ||
+            msg.includes('deprecated');
+
+          if (!isModelUnavailable) {
             break;
           }
         }

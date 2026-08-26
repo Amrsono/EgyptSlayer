@@ -160,8 +160,9 @@ Respond in JSON matching this exact structure:
 }`;
 
   const GEMINI_MODELS = [
+    'gemini-3.6-flash',
+    'gemini-2.5-flash',
     'gemini-1.5-flash-latest',
-    'gemini-2.0-flash',
     'gemini-1.5-flash',
     'gemini-1.5-pro',
     'gemini-pro'
@@ -188,7 +189,13 @@ Respond in JSON matching this exact structure:
       if (data?.error) {
         lastError = new Error(data.error.message || 'Gemini error');
         const msg = (data.error.message || '').toLowerCase();
-        if (!msg.includes('not found') && !msg.includes('not supported')) {
+        const isModelUnavailable =
+          msg.includes('not found') ||
+          msg.includes('not supported') ||
+          msg.includes('no longer available') ||
+          msg.includes('deprecated');
+
+        if (!isModelUnavailable) {
           break;
         }
       }
