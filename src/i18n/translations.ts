@@ -11,6 +11,7 @@ export interface Translations {
     settingsTooltip: string;
     exportPdf: string;
     exportingPdf: string;
+    ceoAdvisorBtn: string;
   };
   settings: {
     title: string;
@@ -20,6 +21,8 @@ export interface Translations {
     providerOllama: string;
     apiKeyLabel: string;
     endpointLabel: string;
+    saveButton: string;
+    savedToast: string;
   };
   editor: {
     stepBadge: string;
@@ -81,6 +84,28 @@ export interface Translations {
     title: string;
     text: string;
   };
+  ceoAdvisor: {
+    buttonLabel: string;
+    drawerTitle: string;
+    drawerSubtitle: string;
+    statusActive: string;
+    projectSnapshotTitle: string;
+    layoutLabel: string;
+    artworksLabel: string;
+    quickCritiquesTitle: string;
+    quickActions: {
+      critiqueLayout: string;
+      coverHeadline: string;
+      readingFlow: string;
+      goldenSecrets: string;
+    };
+    inputPlaceholder: string;
+    sendBtn: string;
+    thinking: string;
+    noKeyWarning: string;
+    clearChat: string;
+    welcomeMsg: string;
+  };
 }
 
 export const translations: Record<Language, Translations> = {
@@ -95,6 +120,7 @@ export const translations: Record<Language, Translations> = {
       settingsTooltip: 'AI Engine Settings',
       exportPdf: 'Export Animated PDF',
       exportingPdf: 'Exporting PDF...',
+      ceoAdvisorBtn: 'Metal Hammer CEO',
     },
     settings: {
       title: 'Embedded AI Generator Settings',
@@ -104,6 +130,8 @@ export const translations: Record<Language, Translations> = {
       providerOllama: 'Local Ollama LLM',
       apiKeyLabel: 'Gemini API Key',
       endpointLabel: 'Ollama Endpoint URL',
+      saveButton: 'Save Settings',
+      savedToast: 'Settings Saved Successfully!',
     },
     editor: {
       stepBadge: 'STEP 1: CONTENT & VISUAL ASSETS INPUT',
@@ -169,6 +197,28 @@ export const translations: Record<Language, Translations> = {
       title: 'EGYPTSLAYER VISUAL MAGAZINE GENERATOR',
       text: 'Built with Embedded AI Engine • Arabic & English Split Layout • 3D Book Animation',
     },
+    ceoAdvisor: {
+      buttonLabel: 'Metal Hammer CEO',
+      drawerTitle: 'Metal Hammer Executive Editorial Board',
+      drawerSubtitle: 'Live Design Critique & Heavy Metal Publishing Advisor',
+      statusActive: 'CEO Online & Analyzing Project',
+      projectSnapshotTitle: 'Active Magazine Snapshot',
+      layoutLabel: 'Layout:',
+      artworksLabel: 'Artworks:',
+      quickCritiquesTitle: 'Executive Quick Critiques',
+      quickActions: {
+        critiqueLayout: '⚡ Critique My Current Magazine Layout & Artwork',
+        coverHeadline: '🎸 How Can I Make This Cover & Headline Stand Out?',
+        readingFlow: '📰 Dual-Language (Arabic/English) Reading Flow Tips',
+        goldenSecrets: '🔥 5 Golden Secrets to Make This Magazine a Success',
+      },
+      inputPlaceholder: 'Ask the Metal Hammer CEO anything about your layout...',
+      sendBtn: 'Send',
+      thinking: 'Metal Hammer CEO is evaluating your design...',
+      noKeyWarning: 'Gemini API key is not saved. Please enter your API key in Settings and click Save.',
+      clearChat: 'Clear Chat',
+      welcomeMsg: 'Welcome to Metal Hammer Executive Board! I am reviewing your band article, album covers, and page layout. Click any critique button or ask me how to maximize your magazine\'s impact!',
+    },
   },
   ar: {
     navbar: {
@@ -181,6 +231,7 @@ export const translations: Record<Language, Translations> = {
       settingsTooltip: 'إعدادات محرك الذكاء الاصطناعي',
       exportPdf: 'تصدير PDF تفاعلي',
       exportingPdf: 'جاري تصدير PDF...',
+      ceoAdvisorBtn: 'رئيس تحرير ميتال هامر',
     },
     settings: {
       title: 'إعدادات مولد الذكاء الاصطناعي المدمج',
@@ -190,6 +241,8 @@ export const translations: Record<Language, Translations> = {
       providerOllama: 'نموذج Ollama المحلي',
       apiKeyLabel: 'مفتاح Gemini API Key',
       endpointLabel: 'رابط خادم Ollama Endpoint',
+      saveButton: 'حفظ الإعدادات',
+      savedToast: 'تم حفظ الإعدادات ومفتاح API بنجاح!',
     },
     editor: {
       stepBadge: 'الخطوة ١: إدخال المحتوى والوسائط البصرية',
@@ -254,6 +307,28 @@ export const translations: Record<Language, Translations> = {
     footer: {
       title: 'مولد مجلة إيجيبت سلاير البصرية',
       text: 'تم التطوير باستخدام محرك ذكاء اصطناعي مدمج • تصميم مزدوج باللغتين العربية والإنجليزية • تقليب كتاب 3D',
+    },
+    ceoAdvisor: {
+      buttonLabel: 'رئيس تحرير ميتال هامر',
+      drawerTitle: 'المجلس التنفيذي لمجلة Metal Hammer',
+      drawerSubtitle: 'مستشار التصميم والنشر الفوري لمجلات الميتال',
+      statusActive: 'رئيس التحرير متصل ويحلل مشروعك الآن',
+      projectSnapshotTitle: 'ملخص مشروع المجلة الحالي',
+      layoutLabel: 'التنسيق:',
+      artworksLabel: 'الصور الفنية:',
+      quickCritiquesTitle: 'استشارات تنفيدية سريعة',
+      quickActions: {
+        critiqueLayout: '⚡ قيّم شكل تصميم الصفحة والصور الحالية',
+        coverHeadline: '🎸 كيف أجعل الغلاف والعنوان أكثر تأثيراً وجاذبية؟',
+        readingFlow: '📰 نصائح لضبط تناسق القراءة بين العربية والإنجليزية',
+        goldenSecrets: '🔥 ٥ أسرار ذهبية لنجاح المجلة تجارياً',
+      },
+      inputPlaceholder: 'اسأل رئيس تحرير Metal Hammer أي سؤال عن التصميم...',
+      sendBtn: 'إرسال',
+      thinking: 'رئيس التحرير يحلل عناصر مجلتك...',
+      noKeyWarning: 'لم يتم حفظ مفتاح Gemini API. يرجى إدخاله في الإعدادات والضغط على "حفظ الإعدادات".',
+      clearChat: 'مسح المحادثة',
+      welcomeMsg: 'أهلاً بك في مكتب رئيس تحرير Metal Hammer! أنا أتابع حالياً تفاصيل المقال وغلاف الألبوم وتنسيق الصفحات. اضغط على أي زر استشارة سريعة أو اسألني كيف تجعل مجلتك أكثر نجاحاً وحضوراً!',
     },
   },
 };

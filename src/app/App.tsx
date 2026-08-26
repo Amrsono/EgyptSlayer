@@ -7,18 +7,35 @@ import { Navbar } from '../components/Navbar';
 import { MagazineEditor } from '../components/MagazineEditor';
 import { FlipbookViewer } from '../components/FlipbookViewer';
 import { MagazineSpread } from '../components/MagazineSpread';
+import { MetalHammerCeoDrawer } from '../components/MetalHammerCeoDrawer';
 import { Sparkles, Download, Flame, CheckCircle, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'editor' | 'flipbook' | 'spread'>('editor');
   const [articleInput, setArticleInput] = useState<ArticleInput>(SAMPLE_METAL_ARTICLE);
-  const [aiConfig, setAiConfig] = useState<AIConfig>({ provider: 'builtin' });
+  const [aiConfig, setAiConfigState] = useState<AIConfig>(() => {
+    const saved = localStorage.getItem('egyptslayer_ai_config');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        // fallback
+      }
+    }
+    return { provider: 'builtin' };
+  });
   const [generatedContent, setGeneratedContent] = useState<DualLanguageContent | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState<{ percent: number; status: string } | null>(null);
+  const [isCeoDrawerOpen, setIsCeoDrawerOpen] = useState(false);
   const { t } = useLanguage();
+
+  const setAiConfig = (config: AIConfig) => {
+    setAiConfigState(config);
+    localStorage.setItem('egyptslayer_ai_config', JSON.stringify(config));
+  };
 
   // Automatically generate initial sample magazine on first load
   useEffect(() => {
@@ -103,6 +120,20 @@ export function App() {
         aiConfig={aiConfig}
         setAiConfig={setAiConfig}
         onLoadSample={loadSampleData}
+        onOpenCeoDrawer={() => setIsCeoDrawerOpen(true)}
+      />
+
+      {/* Metal Hammer CEO Side Applet Drawer */}
+      <MetalHammerCeoDrawer
+        isOpen={isCeoDrawerOpen}
+        onClose={() => setIsCeoDrawerOpen(false)}
+        input={articleInput}
+        generatedContent={generatedContent}
+        activeTab={activeTab}
+        config={aiConfig}
+        onOpenSettings={() => {
+          setIsCeoDrawerOpen(false);
+        }}
       />
 
       {/* Export Progress Notification Toast */}
@@ -203,4 +234,5 @@ export function App() {
 }
 
 export default App;
+
 

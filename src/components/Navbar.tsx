@@ -1,5 +1,5 @@
-import React from 'react';
-import { Flame, Sparkles, BookOpen, Download, Settings, RefreshCw, Globe } from 'lucide-react';
+import React, { useState } from 'react';
+import { Flame, Sparkles, BookOpen, Download, Settings, RefreshCw, Globe, CheckCircle } from 'lucide-react';
 import { AIConfig } from '../types/magazine';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -11,6 +11,7 @@ interface NavbarProps {
   aiConfig: AIConfig;
   setAiConfig: (config: AIConfig) => void;
   onLoadSample: () => void;
+  onOpenCeoDrawer: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -20,10 +21,21 @@ export const Navbar: React.FC<NavbarProps> = ({
   isExporting,
   aiConfig,
   setAiConfig,
-  onLoadSample
+  onLoadSample,
+  onOpenCeoDrawer
 }) => {
-  const [showSettings, setShowSettings] = React.useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [isSavedToastVisible, setIsSavedToastVisible] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+
+  const handleSaveSettings = () => {
+    localStorage.setItem('egyptslayer_ai_config', JSON.stringify(aiConfig));
+    setIsSavedToastVisible(true);
+    setTimeout(() => {
+      setIsSavedToastVisible(false);
+      setShowSettings(false);
+    }, 1800);
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-metal-950/95 backdrop-blur-md border-b border-red-900/40 px-4 lg:px-8 py-3 shadow-2xl">
@@ -88,6 +100,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
+          {/* Metal Hammer CEO AI Side Applet Toggle Button */}
+          <button
+            onClick={onOpenCeoDrawer}
+            title="Metal Hammer CEO AI Design Advisor"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-black bg-gradient-to-r from-amber-600 via-red-600 to-red-800 text-white shadow-metal-glow hover:brightness-110 active:scale-95 transition-all cursor-pointer border border-amber-500/50"
+          >
+            <Flame className="w-4 h-4 text-amber-200 animate-pulse" />
+            <span>{t.navbar.ceoAdvisorBtn}</span>
+          </button>
+
           {/* Language Switcher */}
           <button
             onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
@@ -173,9 +195,27 @@ export const Navbar: React.FC<NavbarProps> = ({
               />
             </div>
           )}
+
+          {/* Explicit Save Settings Button & Feedback Toast */}
+          <div className="pt-2 flex justify-between items-center border-t border-metal-800">
+            <div>
+              {isSavedToastVisible && (
+                <span className="text-xs text-emerald-400 font-bold animate-pulse flex items-center gap-1">
+                  <CheckCircle className="w-4 h-4 text-emerald-400" /> {t.settings.savedToast}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={handleSaveSettings}
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-red-600 via-red-700 to-amber-600 hover:brightness-110 text-white font-bold text-xs shadow-metal-glow transition-all active:scale-95"
+            >
+              {t.settings.saveButton}
+            </button>
+          </div>
         </div>
       )}
     </nav>
   );
 };
+
 
