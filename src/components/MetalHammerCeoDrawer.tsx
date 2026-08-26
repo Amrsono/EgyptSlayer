@@ -248,7 +248,7 @@ export const MetalHammerCeoDrawer: React.FC<MetalHammerCeoDrawerProps> = ({
               >
                 {msg.sender === 'ceo' && (
                   <div className="flex items-center gap-1.5 pb-1 border-b border-metal-800 text-[10px] font-bold text-amber-400 font-sans uppercase tracking-wider">
-                    <Flame className="w-3.5 h-3.5 text-red-500" /> Metal Hammer Chief Editor
+                    <Flame className="w-3.5 h-3.5 text-red-500" /> EgyptSlayer Chief Editor
                   </div>
                 )}
                 

@@ -120,7 +120,7 @@ export const translations: Record<Language, Translations> = {
       settingsTooltip: 'AI Engine Settings',
       exportPdf: 'Export Animated PDF',
       exportingPdf: 'Exporting PDF...',
-      ceoAdvisorBtn: 'Metal Hammer CEO',
+      ceoAdvisorBtn: 'EgyptSlayer CEO',
     },
     settings: {
       title: 'Embedded AI Generator Settings',
