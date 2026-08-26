@@ -1,6 +1,5 @@
 import React from 'react';
 import { DualLanguageContent, ArticleInput, PageLayoutType } from '../types/magazine';
-import { Star, Disc, Award } from 'lucide-react';
 
 interface MagazineSpreadProps {
   content: DualLanguageContent;
@@ -16,58 +15,57 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
   input,
   pageType = 'article-1',
   fillerImageUrl,
-  pageNumber = 1,
+  pageNumber = 22,
   isPdfMode = true
 }) => {
   const layoutStyle: PageLayoutType = input.layoutStyle || 'wide-header';
-  const showLogo = pageType !== 'filler';
-  const effectivePageNum = pageNumber;
+  const effectivePageNum = pageNumber || 22;
 
   // ----------------------------------------------------
-  // FILLER / BAND ARTWORK PAGE (NO LOGO, CLEAN WHITE/PRINT BG OR FULL BLEED)
+  // FILLER / BAND ARTWORK PAGE (CLEAN EDITORIAL PAPER STYLE)
   // ----------------------------------------------------
   if (pageType === 'filler' && fillerImageUrl) {
     return (
       <div 
-        style={{ fontFamily: "'Cairo', 'Amiri', 'Montserrat', sans-serif" }}
-        className="magazine-page-render w-full min-h-[950px] bg-white text-black p-8 sm:p-12 shadow-2xl relative flex flex-col justify-between border border-gray-300"
+        style={{ fontFamily: "'Cairo', 'Amiri', 'Montserrat', serif" }}
+        className="magazine-page-render w-full min-h-[1050px] bg-[#f7f6f2] text-[#111111] p-8 sm:p-12 shadow-2xl relative flex flex-col justify-between border border-gray-300/80"
       >
-        {/* Top Header - No Logo on filler pages as per Item 5 */}
-        <div className="flex justify-between items-center border-b border-black/20 pb-3 text-xs font-mono font-bold uppercase tracking-wider text-gray-800">
+        {/* Top Header Bar */}
+        <div className="flex justify-between items-center border-b border-black/15 pb-2 text-[11px] font-sans font-bold uppercase tracking-wider text-gray-700">
           <span>EGYPTSLAYER MAGAZINE</span>
           <span>ARTWORK GALLERY</span>
         </div>
 
-        {/* Center Artwork Container */}
-        <div className="my-auto py-6 flex flex-col items-center justify-center space-y-4">
-          <div className="w-full max-h-[700px] overflow-hidden rounded shadow-lg border border-black/10">
+        {/* Center Artwork Box with Distress Border Effect */}
+        <div className="my-auto py-4 flex flex-col items-center justify-center space-y-4">
+          <div className="w-full max-h-[720px] overflow-hidden rounded-sm shadow-md border border-black/20 p-1 bg-white">
             <img
               src={fillerImageUrl}
               alt="Band Visual Divider"
-              className="w-full h-full object-cover max-h-[680px]"
+              className="w-full h-full object-cover max-h-[700px] grayscale contrast-125 hover:contrast-100 transition-all duration-500"
             />
           </div>
-          <div className="text-center pt-2">
-            <h3 className="text-2xl font-black tracking-widest text-black uppercase font-serif">
+          <div className="text-center pt-1">
+            <h3 className="text-2xl font-black tracking-widest text-[#111111] uppercase font-serif">
               {input.bandName.toUpperCase()}
             </h3>
-            <p className="text-xs font-bold text-gray-600 uppercase tracking-widest pt-1">
-              {input.albumTitle} • EXCLUSIVE VISUAL
+            <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest pt-1">
+              {input.albumTitle} • EXCLUSIVE VISUAL GALLERY
             </p>
           </div>
         </div>
 
-        {/* Footer - Format: [Page Number], Egyptslayer Magazine (Item 8 Requirement) */}
-        <div className="pt-4 border-t border-black/20 flex justify-between items-center text-xs font-mono font-bold text-black">
-          <span>{effectivePageNum}, Egyptslayer Magazine</span>
-          <span>ARTWORK SECTION</span>
+        {/* Bottom Minimalist Editorial Footer */}
+        <div className="pt-3 border-t border-black/15 flex justify-between items-center text-[11px] font-sans font-bold text-[#111111]">
+          <span>{effectivePageNum} | EGYPTSLAYER MAGAZINE</span>
+          <span>SPECIAL ISSUE</span>
         </div>
       </div>
     );
   }
 
   // ----------------------------------------------------
-  // ARTICLE PAGE (WHITE BACKGROUND, BLACK TEXT, PORTRAIT)
+  // ARTICLE PAGE (EDITORIAL PRINT MAGAZINE AESTHETIC)
   // ----------------------------------------------------
   const headlineArabic = content.titleAr || input.titleArabic;
   const headlineEnglish = content.titleEn || input.bandName.toUpperCase();
@@ -76,151 +74,164 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
 
   return (
     <div
-      style={{ fontFamily: "'Cairo', 'Amiri', 'Montserrat', sans-serif" }}
-      className="magazine-page-render w-full min-h-[1050px] bg-white text-black p-6 sm:p-10 shadow-2xl relative flex flex-col justify-between border border-gray-300"
+      style={{ fontFamily: "'Cairo', 'Amiri', 'Georgia', serif" }}
+      className="magazine-page-render w-full min-h-[1050px] bg-[#f7f6f2] text-[#111111] p-8 sm:p-12 shadow-2xl relative flex flex-col justify-between border border-gray-300/80"
     >
-      {/* 1. TOP HEADER - Clean top bar with Optional Band Logo (Item 4: Removed yellow/red web banners) */}
-      <div className="flex justify-between items-center border-b-2 border-black pb-3 mb-6">
-        <div className="flex items-center gap-3">
-          {showLogo && input.logoUrl ? (
-            <img src={input.logoUrl} alt="Logo" className="h-9 max-w-[130px] object-contain filter grayscale contrast-200" />
-          ) : showLogo ? (
-            <span className="text-base font-black tracking-tighter uppercase font-serif text-black">
-              {input.bandName}
-            </span>
-          ) : null}
-        </div>
-        <div className="text-xs font-bold font-mono text-black tracking-widest uppercase">
-          EGYPTSLAYER MAGAZINE
-        </div>
-      </div>
-
-      {/* ARTICLE CONTENT WRAPPER BASED ON SELECTED LAYOUT STYLE (Item 9 Requirement) */}
+      {/* ARTICLE CONTENT CONTAINER */}
       <div className="flex-1 flex flex-col justify-between space-y-6">
 
-        {/* LAYOUT OPTION: image-above-title (Full Width Top Image -> Centered Title -> Columns) */}
+        {/* 1. LAYOUT OPTION: image-above-title (Full Width Top Image -> Centered Title -> Columns) */}
         {layoutStyle === 'image-above-title' && input.albumArtUrl && (
-          <div className="w-full max-h-[300px] overflow-hidden rounded mb-2 border border-black/10 shadow-sm">
-            <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-48 sm:h-64 object-cover" />
+          <div className="w-full max-h-[380px] overflow-hidden rounded-sm border border-black/20 shadow-md p-1 bg-white mb-2">
+            <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-64 sm:h-80 object-cover filter contrast-105" />
           </div>
         )}
 
-        {/* 6. CENTERED HEADLINE & SUBTITLE (Item 6 Requirement: Always Centered & 150% Larger) */}
+        {/* 2. CENTERED EDITORIAL HEADLINE & SUBTITLE (150% Larger) */}
         {layoutStyle !== 'full-image' && (
-          <div className="text-center space-y-3 px-2 py-2 border-b border-black/10">
-            {/* Main Headline - 150% Larger (1.5x) than default 3xl -> 5xl/6xl */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-black tracking-tight leading-tight uppercase font-serif">
+          <div className="text-center space-y-2 pb-4 border-b border-black/15">
+            {/* English Main Title - Heavy Bold Magazine Typography */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#111111] tracking-tight leading-none uppercase font-serif">
               {headlineEnglish}
             </h1>
 
-            {/* Arabic Headline */}
-            <h2 className="text-2xl sm:text-3xl font-black text-black font-arabic leading-snug">
-              {headlineArabic}
-            </h2>
+            {/* Subtitle / Intro Lead */}
+            <p className="text-base sm:text-lg font-bold text-gray-800 font-serif italic max-w-3xl mx-auto pt-1 leading-snug">
+              {subtitleEnglish || headlineArabic}
+            </p>
 
-            {/* Subtitles */}
-            {(subtitleEnglish || subtitleArabic) && (
-              <p className="text-xs sm:text-sm font-semibold text-gray-700 font-arabic italic max-w-3xl mx-auto leading-relaxed pt-1">
-                {subtitleArabic} • {subtitleEnglish}
+            {subtitleArabic && (
+              <p className="text-xs sm:text-sm font-semibold text-gray-700 font-arabic italic max-w-3xl mx-auto pt-1 leading-relaxed">
+                {subtitleArabic}
               </p>
             )}
           </div>
         )}
 
-        {/* LAYOUT OPTION: wide-header (Centered Title -> Wide Image -> 2 Columns) */}
+        {/* 3. LAYOUT OPTION: wide-header (Title -> Wide Image -> 2 Columns) */}
         {layoutStyle === 'wide-header' && input.albumArtUrl && (
-          <div className="w-full overflow-hidden rounded border border-black/10 shadow-sm my-2">
-            <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-48 sm:h-64 object-cover" />
+          <div className="w-full overflow-hidden rounded-sm border border-black/20 shadow-md p-1 bg-white my-2">
+            <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-56 sm:h-72 object-cover filter contrast-105" />
           </div>
         )}
 
-        {/* LAYOUT OPTION: full-image (Full Page Portrait Image Only) */}
+        {/* 4. LAYOUT OPTION: full-image (Full Page Portrait Image Only) */}
         {layoutStyle === 'full-image' ? (
-          <div className="flex-1 flex flex-col items-center justify-center space-y-4 py-4">
-            <h1 className="text-3xl sm:text-4xl font-black text-black text-center font-serif uppercase">
+          <div className="flex-1 flex flex-col items-center justify-center space-y-4 py-2">
+            <h1 className="text-3xl sm:text-4xl font-black text-[#111111] text-center font-serif uppercase">
               {headlineEnglish}
             </h1>
             {input.albumArtUrl && (
-              <div className="w-full max-w-2xl h-[650px] overflow-hidden rounded border border-black/20 shadow-md">
+              <div className="w-full max-w-2xl h-[680px] overflow-hidden rounded-sm border border-black/20 shadow-md p-1 bg-white">
                 <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-full object-cover" />
               </div>
             )}
           </div>
         ) : (
-          /* 7. DUAL COLUMN LAYOUT (Item 7 Requirement: Right Column for Arabic, Left Column for English) */
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-1 items-start pt-2">
+          /* 5. SMOOTH 2-COLUMN DUAL LANGUAGE EDITORIAL LAYOUT */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 flex-1 items-start pt-2">
             
             {/* RIGHT COLUMN: ARABIC CONTENT (RTL) */}
-            <div dir="rtl" className="space-y-4 font-arabic text-xs sm:text-sm text-black leading-relaxed text-justify border-b md:border-b-0 md:border-l border-black/10 pl-0 md:pl-6">
+            <div dir="rtl" className="space-y-4 font-arabic text-[13px] sm:text-[14px] text-[#1a1a1a] leading-[1.75] text-justify border-b md:border-b-0 md:border-l border-black/15 pl-0 md:pl-8">
               
-              {/* Optional Tall Image on Right Side if tall-right layout is chosen */}
+              {/* Optional Tall Image on Right Side */}
               {layoutStyle === 'tall-right' && input.albumArtUrl && (
-                <div className="w-full h-56 overflow-hidden rounded mb-4 border border-black/10 shadow-sm">
+                <div className="w-full h-64 overflow-hidden rounded-sm mb-4 border border-black/20 shadow-md p-1 bg-white">
                   <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-full object-cover" />
                 </div>
               )}
 
               {/* Arabic Pull Quote */}
               {content.pullQuoteAr && (
-                <div className="p-3 my-2 border-r-4 border-black bg-gray-100 italic font-bold text-black text-xs">
+                <div className="p-3.5 my-3 border-r-4 border-black bg-black/5 italic font-bold text-[#111111] text-xs sm:text-sm leading-relaxed">
                   "{content.pullQuoteAr}"
                 </div>
               )}
 
-              <div className="space-y-3">
-                <p className="first-letter:text-2xl font-normal leading-relaxed">
+              {/* Arabic Interview / Article Body Paragraphs */}
+              <div className="space-y-3.5">
+                <p className="first-letter:text-3xl font-normal leading-[1.75]">
+                  <strong className="font-black text-[#000000]">نبذة الفرقة والتأثير الموسيقي: </strong>
                   {content.bandBioAr || input.textArabic}
                 </p>
-                {content.albumAnalysisAr && <p className="leading-relaxed">{content.albumAnalysisAr}</p>}
-                {content.gigReviewAr && <p className="leading-relaxed">{content.gigReviewAr}</p>}
+                
+                {content.albumAnalysisAr && (
+                  <p className="leading-[1.75]">
+                    <strong className="font-black text-[#000000]">تحليل الألبوم وتفاصيل الإنتاج: </strong>
+                    {content.albumAnalysisAr}
+                  </p>
+                )}
+                
+                {content.gigReviewAr && (
+                  <p className="leading-[1.75]">
+                    <strong className="font-black text-[#000000]">تفاصيل الحفلات المباشرة والتفاعل: </strong>
+                    {content.gigReviewAr}
+                  </p>
+                )}
               </div>
 
               {/* Track Highlights */}
               {content.tracks && content.tracks.length > 0 && (
-                <div className="pt-3 border-t border-black/10">
-                  <h4 className="font-bold text-xs uppercase mb-1.5 text-black">أبرز الأغاني في الألبوم:</h4>
-                  <ul className="space-y-1 text-xs">
+                <div className="pt-3 border-t border-black/15 mt-4">
+                  <h4 className="font-black text-xs uppercase mb-2 text-[#111111]">أبرز مقطوعات الألبوم:</h4>
+                  <div className="space-y-1 text-xs">
                     {content.tracks.slice(0, 3).map((tr) => (
-                      <li key={tr.number} className="flex justify-between border-b border-gray-200 pb-0.5">
-                        <span className="font-semibold">{tr.number}. {tr.titleArabic || tr.title}</span>
-                        <span className="font-mono text-gray-600">{tr.duration}</span>
-                      </li>
+                      <div key={tr.number} className="flex justify-between border-b border-gray-300 pb-1">
+                        <span className="font-bold text-[#111111]">{tr.number}. {tr.titleArabic || tr.title}</span>
+                        <span className="font-mono text-gray-600 text-[11px]">{tr.duration}</span>
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
             </div>
 
             {/* LEFT COLUMN: ENGLISH CONTENT (LTR) */}
-            <div dir="ltr" className="space-y-4 text-xs sm:text-sm text-black leading-relaxed text-justify font-sans">
+            <div dir="ltr" className="space-y-4 font-serif text-[13px] sm:text-[14px] text-[#1a1a1a] leading-[1.75] text-justify">
               
-              {/* Optional Tall Image on Left Side if tall-left layout is chosen */}
+              {/* Optional Tall Image on Left Side */}
               {layoutStyle === 'tall-left' && input.albumArtUrl && (
-                <div className="w-full h-56 overflow-hidden rounded mb-4 border border-black/10 shadow-sm">
+                <div className="w-full h-64 overflow-hidden rounded-sm mb-4 border border-black/20 shadow-md p-1 bg-white">
                   <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-full object-cover" />
                 </div>
               )}
 
               {/* Band Metadata Box */}
-              <div className="p-3 bg-gray-100 rounded border border-gray-300 space-y-1 font-mono text-[11px]">
-                <div className="font-black text-xs uppercase">{input.bandName} — {input.albumTitle}</div>
+              <div className="p-3 bg-black/5 rounded-sm border border-black/15 space-y-1 font-sans text-[11px]">
+                <div className="font-black text-xs uppercase text-[#111111]">{input.bandName} — {input.albumTitle}</div>
                 <div className="text-gray-700">{input.genre} • {input.origin} ({input.formedYear})</div>
-                <div className="flex items-center gap-1 font-bold text-black pt-0.5">
-                  <span>Rating: {input.rating} / 5 Stars</span>
-                </div>
+                <div className="font-bold text-[#111111] pt-0.5">Rating: {input.rating} / 5 Stars</div>
               </div>
 
               {/* English Pull Quote */}
               {content.pullQuoteEn && (
-                <div className="p-3 my-2 border-l-4 border-black bg-gray-100 italic font-bold text-black text-xs">
+                <div className="p-3.5 my-3 border-l-4 border-black bg-black/5 italic font-bold text-[#111111] text-xs sm:text-sm leading-relaxed font-serif">
                   "{content.pullQuoteEn}"
                 </div>
               )}
 
-              <div className="space-y-3">
-                <p className="leading-relaxed">{content.bandBioEn}</p>
-                <p className="leading-relaxed">{content.albumAnalysisEn}</p>
-                <p className="leading-relaxed">{content.gigReviewEn}</p>
+              {/* English Interview / Article Body Paragraphs */}
+              <div className="space-y-3.5">
+                {content.bandBioEn && (
+                  <p className="leading-[1.75]">
+                    <strong className="font-sans font-black text-[#000000] text-xs uppercase tracking-wider block mb-0.5">BAND HISTORY & SOUND IMPACT</strong>
+                    {content.bandBioEn}
+                  </p>
+                )}
+
+                {content.albumAnalysisEn && (
+                  <p className="leading-[1.75]">
+                    <strong className="font-sans font-black text-[#000000] text-xs uppercase tracking-wider block mb-0.5">ALBUM ANALYSIS & PRODUCTION</strong>
+                    {content.albumAnalysisEn}
+                  </p>
+                )}
+
+                {content.gigReviewEn && (
+                  <p className="leading-[1.75]">
+                    <strong className="font-sans font-black text-[#000000] text-xs uppercase tracking-wider block mb-0.5">LIVE SHOW PERFORMANCE</strong>
+                    {content.gigReviewEn}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -229,10 +240,10 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
 
       </div>
 
-      {/* 8. FOOTER - Format: [Page Number], Egyptslayer Magazine (Item 8 Requirement) */}
-      <div className="pt-4 mt-6 border-t-2 border-black flex justify-between items-center text-xs font-mono font-bold text-black uppercase">
-        <span>{effectivePageNum}, Egyptslayer Magazine</span>
-        <span>{input.bandName.toUpperCase()} ARTICLE</span>
+      {/* 6. MINIMALIST EDITORIAL FOOTER (Matching screenshot: 22 | METAL HAMMER style) */}
+      <div className="pt-3 mt-6 border-t border-black/15 flex justify-between items-center text-[11px] font-sans font-bold text-[#111111] uppercase tracking-wider">
+        <span>{effectivePageNum} | EGYPTSLAYER MAGAZINE</span>
+        <span className="text-gray-600 font-semibold">{input.bandName} FEATURE</span>
       </div>
 
     </div>
