@@ -9,6 +9,14 @@ export interface CeoAdviceParams {
   language: 'en' | 'ar';
 }
 
+const GEMINI_MODELS = [
+  'gemini-1.5-flash-latest',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-1.5-pro',
+  'gemini-pro'
+];
+
 export async function getMetalHammerCeoAdvice({
   input,
   generatedContent,
@@ -21,10 +29,9 @@ export async function getMetalHammerCeoAdvice({
   const vercelApiKey = (import.meta.env.VITE_GEMINI_API_KEY as string)?.trim();
   const geminiKey = userApiKey || vercelApiKey;
 
-  // 1. If Gemini API Key exists (either in local config or Vercel env), call Gemini API
+  // 1. If Gemini API Key exists, call Gemini API with multi-model fallback
   if (geminiKey) {
-    try {
-      const prompt = `You are the legendary Chief Editor & CEO of EgyptSlayer Visual Metal Magazine.
+    const prompt = `You are the legendary Chief Editor & CEO of EgyptSlayer Visual Metal Magazine.
 You possess decades of experience in heavy metal music journalism, cover design, visual typography, album artwork selection, dual-language magazine publishing, and commercial newsstand success secrets.
 
 Your personality: Authoritative, energetic, passionate about heavy metal, highly constructive, and sharp.
@@ -52,31 +59,44 @@ Instructions for your response:
 3. Address the exact topic asked by the user (e.g. target audience, layout, colors, typography, or content).
 4. Format your response cleanly using Markdown (bold text, bullet points, numbered lists, and relevant heavy metal emojis).`;
 
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
-          })
+    let lastApiError: any = null;
+
+    for (const model of GEMINI_MODELS) {
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }]
+            })
+          }
+        );
+
+        const data = await res.json();
+
+        if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+          return data.candidates[0].content.parts[0].text;
         }
-      );
 
-      const data = await res.json();
-
-      if (data?.error) {
-        return language === 'ar'
-          ? `⚠️ **خطأ في مفتاح Gemini API**: ${data.error.message || 'المفتاح غير صالح أو انتهت حصته'}. يرجى إعادة إدخال المفتاح في الإعدادات (⚙️) والضغط على "حفظ الإعدادات".`
-          : `⚠️ **Gemini API Error**: ${data.error.message || 'Invalid API key or quota exceeded'}. Please check your API key in Settings (⚙️) and click "Save Settings".`;
+        if (data?.error) {
+          lastApiError = data.error;
+          // If error is not a 404 model name issue, stop retrying
+          const msg = (data.error.message || '').toLowerCase();
+          if (!msg.includes('not found') && !msg.includes('not supported')) {
+            break;
+          }
+        }
+      } catch (err) {
+        lastApiError = err;
       }
+    }
 
-      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (rawText) {
-        return rawText;
-      }
-    } catch (err) {
-      console.warn('Gemini API call failed for CEO Advisor, falling back to offline advisor:', err);
+    if (lastApiError) {
+      return language === 'ar'
+        ? `⚠️ **خطأ في مفتاح Gemini API**: ${lastApiError.message || 'المفتاح غير صالح أو انتهت حصته'}. يرجى التثبت من المفتاح في الإعدادات (⚙️).`
+        : `⚠️ **Gemini API Error**: ${lastApiError.message || 'Invalid API key or quota exceeded'}. Please check your API key in Settings (⚙️).`;
     }
   }
 

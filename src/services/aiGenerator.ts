@@ -159,19 +159,45 @@ Respond in JSON matching this exact structure:
   "keyHighlightsAr": ["...", "..."]
 }`;
 
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { responseMimeType: "application/json" }
-    })
-  });
+  const GEMINI_MODELS = [
+    'gemini-1.5-flash-latest',
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
+    'gemini-1.5-pro',
+    'gemini-pro'
+  ];
 
-  const data = await res.json();
-  const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-  if (!rawText) throw new Error('Invalid response from Gemini');
-  return JSON.parse(rawText) as DualLanguageContent;
+  let lastError: any = null;
+
+  for (const model of GEMINI_MODELS) {
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: "application/json" }
+        })
+      });
+
+      const data = await res.json();
+      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (rawText) {
+        return JSON.parse(rawText) as DualLanguageContent;
+      }
+      if (data?.error) {
+        lastError = new Error(data.error.message || 'Gemini error');
+        const msg = (data.error.message || '').toLowerCase();
+        if (!msg.includes('not found') && !msg.includes('not supported')) {
+          break;
+        }
+      }
+    } catch (e) {
+      lastError = e;
+    }
+  }
+
+  throw lastError || new Error('Invalid response from Gemini across all model routes');
 }
 
 async function generateWithOllama(input: ArticleInput, endpoint: string): Promise<DualLanguageContent> {
