@@ -17,9 +17,11 @@ export async function getMetalHammerCeoAdvice({
   config,
   language
 }: CeoAdviceParams): Promise<string> {
-  const geminiKey = config.apiKey || (import.meta.env.VITE_GEMINI_API_KEY as string);
+  const userApiKey = config.apiKey?.trim();
+  const vercelApiKey = (import.meta.env.VITE_GEMINI_API_KEY as string)?.trim();
+  const geminiKey = userApiKey || vercelApiKey;
 
-  // 1. If Gemini API Key exists, perform live intelligent AI call tailored to the specific user question
+  // 1. If Gemini API Key exists (either in local config or Vercel env), call Gemini API
   if (geminiKey) {
     try {
       const prompt = `You are the legendary Chief Editor & CEO of EgyptSlayer Visual Metal Magazine.
@@ -47,7 +49,7 @@ User's Specific Question / Request:
 Instructions for your response:
 1. Answer the user's specific question directly as the EgyptSlayer Chief Editor & CEO.
 2. Tailor your advice specifically to the band "${input.bandName || 'EgyptSlayer'}", their genre "${input.genre || 'Oriental Thrash Metal'}", and the current project context provided.
-3. If the user asks a specific question (e.g. about headlines, layout, colors, track breakdown, or reading flow), focus heavily on answering THAT exact question.
+3. Address the exact topic asked by the user (e.g. target audience, layout, colors, typography, or content).
 4. Format your response cleanly using Markdown (bold text, bullet points, numbered lists, and relevant heavy metal emojis).`;
 
       const res = await fetch(
@@ -62,6 +64,13 @@ Instructions for your response:
       );
 
       const data = await res.json();
+
+      if (data?.error) {
+        return language === 'ar'
+          ? `⚠️ **خطأ في مفتاح Gemini API**: ${data.error.message || 'المفتاح غير صالح أو انتهت حصته'}. يرجى إعادة إدخال المفتاح في الإعدادات (⚙️) والضغط على "حفظ الإعدادات".`
+          : `⚠️ **Gemini API Error**: ${data.error.message || 'Invalid API key or quota exceeded'}. Please check your API key in Settings (⚙️) and click "Save Settings".`;
+      }
+
       const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
       if (rawText) {
         return rawText;
@@ -71,14 +80,7 @@ Instructions for your response:
     }
   }
 
-  // 2. If provider is set to Gemini but key is missing, warn the user
-  if (!geminiKey && config.provider === 'gemini') {
-    return language === 'ar'
-      ? `⚠️ **تنبيه رئيس التحرير**: لم يتم حفظ مفتاح **Google Gemini API Key**. يرجى فتح الإعدادات (⚙️) في أعلى الصفحة، وإدخال مفتاح API الخاص بك والضغط على زر **"حفظ الإعدادات"** لتفعيل الاستشارات الحية فائقة الذكاء!`
-      : `⚠️ **CEO Alert**: Google Gemini API key is not configured. Please click Settings (⚙️) in the top bar, enter your Gemini API Key, and click **"Save Settings"** to unlock live AI design critiques!`;
-  }
-
-  // 3. Smart Offline Fallback with Query-Specific Matching
+  // 2. Smart Offline Fallback with Query-Specific Matching
   return getBuiltinCeoCritique(input, generatedContent, userQuery, language);
 }
 
@@ -92,6 +94,28 @@ function getBuiltinCeoCritique(
   const album = input.albumTitle || 'Dominion of Osiris';
   const layout = input.layoutStyle || 'wide-header';
   const q = (userQuery || '').toLowerCase();
+
+  // Query: Target Audience
+  if (q.includes('audience') || q.includes('target') || q.includes('جمهور') || q.includes('متابعين') || q.includes('قراء')) {
+    if (language === 'ar') {
+      return `🤘 **تحليل رئيس التحرير للجمهور المستهدف لمجلة إيجيبت سلاير:**
+
+1. **عشاق الميتال العربي والشرقي**: قراء يبحثون عن تغطية جادة واحترافية لفرق ثراش وديث ميتال محلية وإقليمية.
+2. **الجمهور العالمي (International Purists)**: التنسيق المزدوج بالإنجليزية (LTR) يجذب قراء المجلات العالمية مثل Metal Hammer و Kerrang! الذين يبحثون عن فرق ميتال جديدة.
+3. **الموسيقيون وهواة الآلات**: ينجذبون لمراجعات الألبومات وتفاصيل التوزيع الصوتي والصولوهات السريعة.
+
+---
+💡 *ملاحظة رئيس التحرير*: للحصول على إجابات تفاعلية متعمقة عبر الذكاء الاصطناعي، يرجى التأكد من **حفظ مفتاح Gemini API** في الإعدادات (⚙️)، أو إعادة التجميع (Redeploy) على Vercel ليتعرف الموقع على المفتاح.`;
+    }
+    return `🤘 **Executive Audience Analysis:**
+
+1. **Regional & Middle Eastern Metal Purists**: Hardcore fans seeking authentic, serious coverage of regional Thrash/Death metal powerhouses like **${band}**.
+2. **International Extreme Metal Readers**: Dual-language English side (LTR) captures global subscribers of publications like Metal Hammer & Terrorizer looking for fresh underground acts.
+3. **Audio Engineers & Musicians**: Drawn to deep album production breakdowns, technical guitar specs, and track duration breakdowns.
+
+---
+💡 *CEO Note*: To enable live custom AI answers for any question, paste your **Gemini API Key** in Settings (⚙️) and click **Save Settings**, or click **Redeploy** on Vercel after adding the env variable.`;
+  }
 
   // Query: Cover / Headline
   if (q.includes('cover') || q.includes('headline') || q.includes('عنوان') || q.includes('غلاف')) {
@@ -151,12 +175,12 @@ function getBuiltinCeoCritique(
 
 1. **شكل الصفحة الحالي (${layout})**: تنسيق صحفي ممتاز يناسب مجلات الميتال العالمية.
 2. **الصور الفنية الفاصلة**: تحتوي مجلتك حالياً على **${input.fillerArtUrls.length}** صور فاصلة.
-3. **نصيحة حاسمة**: للإجابة المباشرة على أي سؤال مخصص، تأكد من حفظ **Gemini API Key** في الإعدادات لتفعيل المحادثة الذكية الفورية!`;
+3. **ملاحظة تفعيل الذكاء الاصطناعي**: في حال إضافتك للمفتاح على Vercel، يرجى القيام بـ **Redeploy** للموقع على Vercel ليقوم النظام بدمج المفتاح أثناء البناء. أو أدخل المفتاح مباشرة في قائمة الإعدادات (⚙️) واضغط **"حفظ الإعدادات"**.`;
   }
 
   return `⭐️ **EgyptSlayer Chief Editor Impact Rating for ${band}: 9.0/10 🔥**
 
 1. **Active Layout Style (${layout})**: Delivers a classic, high-impact heavy metal magazine aesthetic.
 2. **Artwork Separators**: You currently have **${input.fillerArtUrls.length}** full-bleed chapter separators.
-3. **Pro Tip**: To get custom answers for open-ended questions, ensure your **Gemini API Key** is saved in Settings!`;
+3. **Vercel Key Activation**: If you added VITE_GEMINI_API_KEY in Vercel settings, click **Redeploy** on Vercel so the build bakes in the variable. Alternatively, open **Settings (⚙️)** in the top bar, paste your API key, and click **Save Settings**.`;
 }
