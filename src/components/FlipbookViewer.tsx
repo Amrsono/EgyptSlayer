@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DualLanguageContent, ArticleInput } from '../types/magazine';
 import { MagazineSpread } from './MagazineSpread';
 import { ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, RotateCcw, BookOpen, Flame, Sparkles } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface FlipbookViewerProps {
   content: DualLanguageContent;
@@ -18,6 +19,7 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isFlipping, setIsFlipping] = useState(false);
   const [flipDirection, setFlipDirection] = useState<'next' | 'prev'>('next');
+  const { t } = useLanguage();
 
   // Play realistic page turn sound simulation using Web Audio API
   const playPageTurnSound = () => {
@@ -97,7 +99,7 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
               {input.bandName} • {input.albumTitle}
             </h3>
             <p className="text-xs text-slate-400 font-mono flex items-center gap-2">
-              <span>Spread {currentPage + 1} of {totalPages}</span>
+              <span>{t.flipbook.spreadPrefix} {currentPage + 1} {t.flipbook.spreadOf} {totalPages}</span>
               <span className="text-slate-600">•</span>
               <span className="text-red-400 font-semibold">{currentSpread.label}</span>
             </p>
@@ -111,7 +113,7 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
             disabled={currentPage === 0 || isFlipping}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-metal-850 hover:bg-metal-800 text-slate-200 border border-slate-700 disabled:opacity-30 transition-all"
           >
-            <ChevronLeft className="w-4 h-4" /> Previous Page
+            <ChevronLeft className="w-4 h-4" /> {t.flipbook.prevPage}
           </button>
 
           {/* Quick Page Jump Pill */}
@@ -132,7 +134,7 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
                 className={`w-3 h-3 rounded-full transition-all ${
                   idx === currentPage ? 'bg-red-600 scale-125 shadow-metal-glow' : 'bg-slate-700 hover:bg-slate-500'
                 }`}
-                title={`Jump to Page ${idx + 1}`}
+                title={`${t.flipbook.jumpToPage} ${idx + 1}`}
               />
             ))}
           </div>
@@ -142,7 +144,7 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
             disabled={currentPage === totalPages - 1 || isFlipping}
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-red-600 to-red-800 text-white shadow-metal-glow hover:brightness-110 disabled:opacity-30 transition-all"
           >
-            Next Page <ChevronRight className="w-4 h-4" />
+            {t.flipbook.nextPage} <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
@@ -151,7 +153,7 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
             className="p-2.5 rounded-xl bg-metal-850 hover:bg-metal-800 text-slate-300 border border-slate-700 transition-all"
-            title={soundEnabled ? 'Mute Page Flip Sound' : 'Enable Page Flip Sound'}
+            title={soundEnabled ? t.flipbook.muteSound : t.flipbook.enableSound}
           >
             {soundEnabled ? <Volume2 className="w-4 h-4 text-amber-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
           </button>
@@ -160,7 +162,7 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
             onClick={onEditRequested}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-metal-850 hover:bg-metal-800 text-slate-300 border border-slate-700 transition-all"
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Edit Input
+            <RotateCcw className="w-3.5 h-3.5" /> {t.flipbook.editInput}
           </button>
         </div>
 
@@ -204,13 +206,14 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
       <div className="flex flex-wrap items-center justify-between text-xs text-slate-400 font-mono px-2">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-red-500" />
-          <span>Interactive 3D Book Mode • Left: Arabic (RTL) | Right: English (LTR)</span>
+          <span>{t.flipbook.bottomNote}</span>
         </div>
         <div className="flex items-center gap-3">
-          <span>Use Next/Prev buttons or Click Page Indicators to Turn Pages</span>
+          <span>{t.flipbook.turnPageNote}</span>
         </div>
       </div>
 
     </div>
   );
 };
+

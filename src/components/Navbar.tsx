@@ -1,6 +1,7 @@
 import React from 'react';
-import { Flame, Sparkles, BookOpen, Download, Settings, RefreshCw } from 'lucide-react';
+import { Flame, Sparkles, BookOpen, Download, Settings, RefreshCw, Globe } from 'lucide-react';
 import { AIConfig } from '../types/magazine';
+import { useLanguage } from '../context/LanguageContext';
 
 interface NavbarProps {
   activeTab: 'editor' | 'flipbook' | 'spread';
@@ -22,6 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLoadSample
 }) => {
   const [showSettings, setShowSettings] = React.useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <nav className="sticky top-0 z-50 bg-metal-950/95 backdrop-blur-md border-b border-red-900/40 px-4 lg:px-8 py-3 shadow-2xl">
@@ -34,10 +36,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <h1 className="text-2xl font-black tracking-wider metal-red-title flex items-center gap-2">
-              EGYPTSLAYER <span className="text-xs px-2 py-0.5 rounded bg-red-950 border border-red-800 text-red-400 font-mono tracking-normal">MAGAZINE</span>
+              EGYPTSLAYER <span className="text-xs px-2 py-0.5 rounded bg-red-950 border border-red-800 text-red-400 font-mono tracking-normal">{t.navbar.magazineBadge}</span>
             </h1>
             <p className="text-[10px] text-slate-400 uppercase tracking-widest font-mono">
-              Dual-Language Metal Publication Engine
+              {t.navbar.brandSubtitle}
             </p>
           </div>
         </div>
@@ -53,7 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Sparkles className="w-4 h-4" />
-            Article & Assets Editor
+            {t.navbar.editorTab}
           </button>
           
           <button
@@ -65,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            3D Animated Flipbook
+            {t.navbar.flipbookTab}
           </button>
 
           <button
@@ -77,25 +79,35 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Flame className="w-4 h-4" />
-            Dual Spread View
+            {t.navbar.spreadTab}
           </button>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
+          {/* Language Switcher */}
+          <button
+            onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+            title={language === 'en' ? 'تغيير اللغة إلى العربية' : 'Switch Language to English'}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold bg-metal-900 hover:bg-metal-800 text-amber-400 border border-amber-900/60 transition-all cursor-pointer shadow-sm"
+          >
+            <Globe className="w-3.5 h-3.5" />
+            <span>{language === 'en' ? 'العربية' : 'English'}</span>
+          </button>
+
           <button
             onClick={onLoadSample}
             title="Load Metal Band Sample Data"
-            className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-metal-850 hover:bg-metal-800 text-amber-400 border border-amber-900/50 transition-all"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-metal-850 hover:bg-metal-800 text-slate-300 border border-slate-700 transition-all"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Demo Data
+            <RefreshCw className="w-3.5 h-3.5 text-amber-400" />
+            {t.navbar.demoData}
           </button>
 
           <button
             onClick={() => setShowSettings(!showSettings)}
             className="p-2 rounded-lg bg-metal-900 text-slate-300 hover:text-white border border-slate-800 transition-all"
-            title="AI Engine Settings"
+            title={t.navbar.settingsTooltip}
           >
             <Settings className="w-4 h-4" />
           </button>
@@ -106,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black bg-gradient-to-r from-red-600 to-red-800 text-white shadow-metal-glow hover:brightness-110 active:scale-95 transition-all disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
-            {isExporting ? 'Exporting PDF...' : 'Export Animated PDF'}
+            {isExporting ? t.navbar.exportingPdf : t.navbar.exportPdf}
           </button>
         </div>
       </div>
@@ -116,26 +128,26 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="max-w-md mx-auto mt-3 p-4 rounded-xl bg-metal-900 border border-red-900/60 shadow-2xl text-xs space-y-3">
           <div className="flex justify-between items-center pb-2 border-b border-metal-800">
             <h3 className="font-bold text-slate-200 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400" /> Embedded AI Generator Settings
+              <Sparkles className="w-4 h-4 text-amber-400" /> {t.settings.title}
             </h3>
             <button onClick={() => setShowSettings(false)} className="text-slate-400 hover:text-white">✕</button>
           </div>
           <div>
-            <label className="block text-slate-400 mb-1">AI Provider</label>
+            <label className="block text-slate-400 mb-1">{t.settings.providerLabel}</label>
             <select
               value={aiConfig.provider}
               onChange={(e) => setAiConfig({ ...aiConfig, provider: e.target.value as any })}
               className="w-full bg-metal-950 border border-slate-700 rounded-lg p-2 text-slate-200"
             >
-              <option value="builtin">Built-in Metal Journalism AI (Offline / Fast)</option>
-              <option value="gemini">Google Gemini API</option>
-              <option value="ollama">Local Ollama LLM</option>
+              <option value="builtin">{t.settings.providerBuiltin}</option>
+              <option value="gemini">{t.settings.providerGemini}</option>
+              <option value="ollama">{t.settings.providerOllama}</option>
             </select>
           </div>
 
           {aiConfig.provider === 'gemini' && (
             <div>
-              <label className="block text-slate-400 mb-1">Gemini API Key</label>
+              <label className="block text-slate-400 mb-1">{t.settings.apiKeyLabel}</label>
               <input
                 type="password"
                 placeholder="AIzaSy..."
@@ -148,7 +160,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {aiConfig.provider === 'ollama' && (
             <div>
-              <label className="block text-slate-400 mb-1">Ollama Endpoint URL</label>
+              <label className="block text-slate-400 mb-1">{t.settings.endpointLabel}</label>
               <input
                 type="text"
                 placeholder="http://localhost:11434"
@@ -163,3 +175,4 @@ export const Navbar: React.FC<NavbarProps> = ({
     </nav>
   );
 };
+

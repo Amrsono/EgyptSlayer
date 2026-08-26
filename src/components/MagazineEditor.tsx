@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArticleInput, PageLayoutType } from '../types/magazine';
 import { Upload, Sparkles, Image as ImageIcon, Music, Trash2, Plus, Flame, FileText, Globe, LayoutGrid } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface MagazineEditorProps {
   input: ArticleInput;
@@ -9,42 +10,48 @@ interface MagazineEditorProps {
   isGenerating: boolean;
 }
 
-const LAYOUT_OPTIONS: { id: PageLayoutType; titleAr: string; titleEn: string; description: string }[] = [
+const LAYOUT_OPTIONS: { id: PageLayoutType; titleAr: string; titleEn: string; descriptionAr: string; descriptionEn: string }[] = [
   {
     id: 'wide-header',
-    titleAr: 'صورة عريضة و تحتها عامودين',
+    titleAr: 'صورة عريضة وتحتها عامودين',
     titleEn: 'Wide Top Banner + 2 Columns',
-    description: 'صورة بعرض المقال في الأعلى يتبعها أعمدة النص العربي والإنجليزي'
+    descriptionAr: 'صورة بعرض المقال في الأعلى يتبعها أعمدة النص العربي والإنجليزي',
+    descriptionEn: 'Full article width header picture followed by dual reading columns'
   },
   {
     id: 'image-above-title',
     titleAr: 'صورة بعرض الصفحة ثم العنوان والأعمدة',
     titleEn: 'Full Width Image Top -> Title -> Columns',
-    description: 'صورة في أعلى المنتصف يليها العنوان الرئيسي ثم أعمدة النصوص'
+    descriptionAr: 'صورة في أعلى المنتصف يليها العنوان الرئيسي ثم أعمدة النصوص',
+    descriptionEn: 'Top centered image followed by primary headline and columns'
   },
   {
     id: 'tall-right',
     titleAr: 'صورة طولية يمين مع أعمدة',
     titleEn: 'Tall Portrait Image Right',
-    description: 'صورة رأسية في الجهة اليمنى تحيط بها أعمدة القراءة'
+    descriptionAr: 'صورة رأسية في الجهة اليمنى تحيط بها أعمدة القراءة',
+    descriptionEn: 'Vertical right-side portrait framed by reading text'
   },
   {
     id: 'tall-left',
     titleAr: 'صورة طولية شمال مع أعمدة',
     titleEn: 'Tall Portrait Image Left',
-    description: 'صورة رأسية في الجهة اليسرى تحيط بها أعمدة القراءة'
+    descriptionAr: 'صورة رأسية في الجهة اليسرى تحيط بها أعمدة القراءة',
+    descriptionEn: 'Vertical left-side portrait framed by reading text'
   },
   {
     id: 'columns-only',
     titleAr: 'عواميد كتابة فقط',
     titleEn: 'Columns Text Only',
-    description: 'تنسيق مجلة كلاسيكي بدون صور داخلية (نصوص قراءة فقط)'
+    descriptionAr: 'تنسيق مجلة كلاسيكي بدون صور داخلية (نصوص قراءة فقط)',
+    descriptionEn: 'Classic editorial text columns without embedded photos'
   },
   {
     id: 'full-image',
     titleAr: 'صورة طولية بملىء الصفحة فقط',
     titleEn: 'Full Page Portrait Artwork',
-    description: 'صفحة صورة كاملة بدون نصوص جانبية'
+    descriptionAr: 'صفحة صورة كاملة بدون نصوص جانبية',
+    descriptionEn: 'Full-bleed photo showcase spread page without text'
   }
 ];
 
@@ -55,6 +62,7 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
   isGenerating
 }) => {
   const [newFillerUrl, setNewFillerUrl] = useState('');
+  const { t, language } = useLanguage();
 
   const handleInputChange = (field: keyof ArticleInput, value: any) => {
     setInput({ ...input, [field]: value });
@@ -104,14 +112,13 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
       {/* Header Title */}
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-950/80 border border-red-800 text-red-400 text-xs font-mono">
-          <Flame className="w-3.5 h-3.5" /> STEP 1: CONTENT & VISUAL ASSETS INPUT
+          <Flame className="w-3.5 h-3.5" /> {t.editor.stepBadge}
         </div>
         <h2 className="text-4xl font-black metal-title uppercase tracking-wide">
-          Metal Magazine Creator
+          {t.editor.mainTitle}
         </h2>
         <p className="text-slate-400 max-w-2xl mx-auto text-sm">
-          Provide your Arabic metal band article, band logo, album cover, and artwork fillers.
-          Our embedded AI will translate, structure, and assemble an interactive dual-language magazine.
+          {t.editor.mainDescription}
         </p>
       </div>
 
@@ -123,50 +130,50 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
           {/* Band Metadata Box */}
           <div className="metal-border p-6 rounded-2xl space-y-4">
             <h3 className="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-              <Music className="w-4 h-4" /> Band & Album Metadata
+              <Music className="w-4 h-4" /> {t.editor.bandMetadataHeader}
             </h3>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Band Name (اسم الفرقة)</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.bandNameLabel}</label>
                 <input
                   type="text"
                   value={input.bandName}
                   onChange={(e) => handleInputChange('bandName', e.target.value)}
-                  placeholder="e.g. EgyptSlayer"
+                  placeholder={t.editor.bandNamePlaceholder}
                   className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-100 focus:border-red-600 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Album Title (عنوان الألبوم)</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.albumTitleLabel}</label>
                 <input
                   type="text"
                   value={input.albumTitle}
                   onChange={(e) => handleInputChange('albumTitle', e.target.value)}
-                  placeholder="e.g. Dominion of Osiris"
+                  placeholder={t.editor.albumTitlePlaceholder}
                   className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-100 focus:border-red-600 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Genre (النوع الموسيقي)</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.genreLabel}</label>
                 <input
                   type="text"
                   value={input.genre}
                   onChange={(e) => handleInputChange('genre', e.target.value)}
-                  placeholder="e.g. Oriental Thrash Metal"
+                  placeholder={t.editor.genrePlaceholder}
                   className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-100 focus:border-red-600 outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 mb-1">Origin / City (البلد / المدينة)</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.originLabel}</label>
                 <input
                   type="text"
                   value={input.origin}
                   onChange={(e) => handleInputChange('origin', e.target.value)}
-                  placeholder="e.g. Cairo, Egypt"
+                  placeholder={t.editor.originPlaceholder}
                   className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-100 focus:border-red-600 outline-none"
                 />
               </div>
@@ -177,66 +184,70 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
           <div className="metal-border p-6 rounded-2xl space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-bold uppercase tracking-wider text-red-400 flex items-center gap-2">
-                <FileText className="w-4 h-4" /> Arabic Article Text (المقال باللغة العربية)
+                <FileText className="w-4 h-4" /> {t.editor.arabicArticleHeader}
               </h3>
-              <span className="text-[10px] text-slate-500 font-mono">RTL Arabic Input</span>
+              <span className="text-[10px] text-slate-500 font-mono">{t.editor.rtlBadge}</span>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">Article Headline (عنوان المقال)</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.headlineLabel}</label>
               <input
                 type="text"
                 dir="rtl"
                 value={input.titleArabic}
                 onChange={(e) => handleInputChange('titleArabic', e.target.value)}
-                placeholder="مثال: صعود ملحمة إيجيبت سلاير في عالم الميتال..."
+                placeholder={t.editor.headlinePlaceholder}
                 className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm font-arabic text-amber-200 focus:border-red-600 outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">Full Arabic Article Content (تفاصيل الفرقة والحفلات والنقد)</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.articleContentLabel}</label>
               <textarea
                 rows={8}
                 dir="rtl"
                 value={input.textArabic}
                 onChange={(e) => handleInputChange('textArabic', e.target.value)}
-                placeholder="اكتب هنا تفاصيل الفرقة، مراجعة الألبوم، تاريخ الحفلات، والملاحظات الخاصة بالمقال..."
+                placeholder={t.editor.articleContentPlaceholder}
                 className="w-full bg-metal-950 border border-metal-800 rounded-lg p-3 text-sm font-arabic text-slate-200 leading-relaxed focus:border-red-600 outline-none resize-y"
               />
             </div>
           </div>
 
-          {/* Page Layout Structure Selector (Item 9 Requirement) */}
+          {/* Page Layout Structure Selector */}
           <div className="metal-border p-6 rounded-2xl space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                <LayoutGrid className="w-4 h-4 text-red-500" /> اختيار شكل الصفحة بالمقال (Page Layout Options)
+                <LayoutGrid className="w-4 h-4 text-red-500" /> {t.editor.layoutOptionsHeader}
               </h3>
-              <span className="text-[10px] text-slate-400 font-mono">6 Presets</span>
+              <span className="text-[10px] text-slate-400 font-mono">{t.editor.layoutCountBadge}</span>
             </div>
 
-            <p className="text-xs text-slate-300 font-arabic">
-              اختر شكل تصميم الصفحة المطلوب لعرض المقال والأعمدة والصور:
+            <p className="text-xs text-slate-300">
+              {t.editor.layoutDescription}
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
               {LAYOUT_OPTIONS.map((opt) => {
                 const isSelected = (input.layoutStyle || 'wide-header') === opt.id;
+                const title = language === 'ar' ? opt.titleAr : opt.titleEn;
+                const description = language === 'ar' ? opt.descriptionAr : opt.descriptionEn;
                 return (
                   <button
                     key={opt.id}
                     type="button"
                     onClick={() => handleInputChange('layoutStyle', opt.id)}
-                    className={`p-3.5 rounded-xl border text-right transition-all flex flex-col justify-between gap-2.5 ${
+                    className={`p-3.5 rounded-xl border transition-all flex flex-col justify-between gap-2.5 ${
+                      language === 'ar' ? 'text-right' : 'text-left'
+                    } ${
                       isSelected
                         ? 'border-red-600 bg-red-950/70 shadow-metal-glow ring-2 ring-red-500/50'
                         : 'border-metal-800 bg-metal-950/80 hover:border-slate-600'
                     }`}
                   >
-                    <div className="flex justify-between items-start w-full">
-                      <span className="text-xs font-bold font-arabic text-amber-200 leading-snug">
-                        {opt.titleAr}
+                    <div className="flex justify-between items-start w-full gap-2">
+                      <span className="text-xs font-bold font-sans text-amber-200 leading-snug">
+                        {title}
                       </span>
                       <span className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                         isSelected ? 'border-red-500 bg-red-600' : 'border-slate-600'
@@ -244,9 +255,8 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
                         {isSelected && <span className="w-1.5 h-1.5 bg-white rounded-full" />}
                       </span>
                     </div>
-                    <p className="text-[10px] text-slate-400 font-sans">{opt.titleEn}</p>
-                    <p className="text-[11px] text-slate-300 font-arabic leading-relaxed">
-                      {opt.description}
+                    <p className="text-[11px] text-slate-300 leading-relaxed">
+                      {description}
                     </p>
                   </button>
                 );
@@ -262,12 +272,12 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
           {/* Logo & Album Artwork Uploads */}
           <div className="metal-border p-6 rounded-2xl space-y-5">
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-              <ImageIcon className="w-4 h-4 text-red-400" /> Logo & Album Artworks
+              <ImageIcon className="w-4 h-4 text-red-400" /> {t.editor.visualAssetsHeader}
             </h3>
 
             {/* Band Logo Upload */}
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-400">Band Logo (شعار الفرقة)</label>
+              <label className="block text-xs font-semibold text-slate-400">{t.editor.bandLogoLabel}</label>
               <div className="flex items-center gap-4">
                 {input.logoUrl ? (
                   <div className="relative w-20 h-20 bg-metal-950 rounded-lg border border-red-800 p-2 flex items-center justify-center">
@@ -282,7 +292,7 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
                 ) : (
                   <label className="flex-1 flex flex-col items-center justify-center h-24 border-2 border-dashed border-metal-700 hover:border-red-600 rounded-lg cursor-pointer bg-metal-950/50 transition-all">
                     <Upload className="w-6 h-6 text-slate-500 mb-1" />
-                    <span className="text-[11px] text-slate-400">Upload Logo Image</span>
+                    <span className="text-[11px] text-slate-400">{t.editor.uploadLogo}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -296,7 +306,7 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
 
             {/* Album Cover Upload */}
             <div className="space-y-2">
-              <label className="block text-xs font-semibold text-slate-400">Album Cover Picture (صورة الألبوم)</label>
+              <label className="block text-xs font-semibold text-slate-400">{t.editor.albumCoverLabel}</label>
               <div className="flex items-center gap-4">
                 {input.albumArtUrl ? (
                   <div className="relative w-24 h-24 bg-metal-950 rounded-lg border border-red-800 p-1 flex items-center justify-center overflow-hidden">
@@ -311,7 +321,7 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
                 ) : (
                   <label className="flex-1 flex flex-col items-center justify-center h-24 border-2 border-dashed border-metal-700 hover:border-red-600 rounded-lg cursor-pointer bg-metal-950/50 transition-all">
                     <Upload className="w-6 h-6 text-slate-500 mb-1" />
-                    <span className="text-[11px] text-slate-400">Upload Album Artwork</span>
+                    <span className="text-[11px] text-slate-400">{t.editor.uploadAlbum}</span>
                     <input
                       type="file"
                       accept="image/*"
@@ -328,13 +338,13 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
           <div className="metal-border p-6 rounded-2xl space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
-                <Globe className="w-4 h-4 text-amber-400" /> Page Separators (Band Art Fillers)
+                <Globe className="w-4 h-4 text-amber-400" /> {t.editor.pageSeparatorsHeader}
               </h3>
-              <span className="text-[10px] text-slate-400 font-mono">{input.fillerArtUrls.length} Artworks</span>
+              <span className="text-[10px] text-slate-400 font-mono">{input.fillerArtUrls.length} {t.editor.artworksCount}</span>
             </div>
 
             <p className="text-xs text-slate-400">
-              Full-bleed band artwork pages will be inserted as visual page separators between magazine chapters.
+              {t.editor.separatorsDescription}
             </p>
 
             {/* Existing Fillers Grid */}
@@ -353,7 +363,7 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
 
               <label className="flex flex-col items-center justify-center aspect-square border-2 border-dashed border-metal-700 hover:border-amber-500 rounded-lg cursor-pointer bg-metal-950/40 transition-all">
                 <Plus className="w-5 h-5 text-amber-500 mb-1" />
-                <span className="text-[10px] text-slate-400">Add Art</span>
+                <span className="text-[10px] text-slate-400">{t.editor.addArt}</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -367,7 +377,7 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
             <div className="flex gap-2 pt-2">
               <input
                 type="text"
-                placeholder="Or paste artwork image URL..."
+                placeholder={t.editor.pasteUrlPlaceholder}
                 value={newFillerUrl}
                 onChange={(e) => setNewFillerUrl(e.target.value)}
                 className="flex-1 bg-metal-950 border border-metal-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none"
@@ -376,7 +386,7 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
                 onClick={addFillerUrl}
                 className="px-3 py-1.5 rounded-lg bg-metal-800 hover:bg-metal-700 text-xs font-semibold text-slate-200"
               >
-                Add URL
+                {t.editor.addUrlButton}
               </button>
             </div>
           </div>
@@ -388,7 +398,7 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
             className="w-full py-4 rounded-xl font-black text-sm tracking-wider uppercase bg-gradient-to-r from-red-600 via-red-700 to-amber-600 text-white shadow-metal-glow hover:brightness-110 active:scale-98 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
           >
             <Sparkles className="w-5 h-5 animate-spin" style={{ animationDuration: isGenerating ? '2s' : '0s' }} />
-            {isGenerating ? 'AI Generating Metal Magazine...' : 'Generate 3D Animated Metal Magazine'}
+            {isGenerating ? t.editor.generatingButton : t.editor.generateButton}
           </button>
 
         </div>
@@ -396,3 +406,4 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
     </div>
   );
 };
+

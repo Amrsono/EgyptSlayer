@@ -8,6 +8,7 @@ import { MagazineEditor } from '../components/MagazineEditor';
 import { FlipbookViewer } from '../components/FlipbookViewer';
 import { MagazineSpread } from '../components/MagazineSpread';
 import { Sparkles, Download, Flame, CheckCircle, AlertCircle } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<'editor' | 'flipbook' | 'spread'>('editor');
@@ -17,6 +18,7 @@ export function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState<{ percent: number; status: string } | null>(null);
+  const { t } = useLanguage();
 
   // Automatically generate initial sample magazine on first load
   useEffect(() => {
@@ -43,13 +45,13 @@ export function App() {
 
   const handleExportPDF = async () => {
     setIsExporting(true);
-    setExportProgress({ percent: 5, status: 'Preparing magazine layout for export...' });
+    setExportProgress({ percent: 5, status: t.toast.preparing });
     
     try {
       // Ensure content is generated
       let content = generatedContent;
       if (!content) {
-        setExportProgress({ percent: 15, status: 'Generating magazine content...' });
+        setExportProgress({ percent: 15, status: t.toast.generating });
         content = await handleGenerateContent(articleInput);
       }
 
@@ -143,8 +145,8 @@ export function App() {
         {activeTab === 'spread' && generatedContent && (
           <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
             <div className="text-center space-y-2">
-              <h2 className="text-3xl font-black metal-title">DUAL-LANGUAGE SPREAD PREVIEW</h2>
-              <p className="text-xs text-slate-400 font-mono">Full-bleed side-by-side Arabic (RTL) & English (LTR) layout</p>
+              <h2 className="text-3xl font-black metal-title">{t.spread.title}</h2>
+              <p className="text-xs text-slate-400 font-mono">{t.spread.subtitle}</p>
             </div>
             
             <div id="magazine-spread-container">
@@ -188,10 +190,10 @@ export function App() {
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center gap-4">
           <div className="flex items-center gap-2">
             <Flame className="w-4 h-4 text-red-600" />
-            <span className="font-bold text-slate-400">EGYPTSLAYER VISUAL MAGAZINE GENERATOR</span>
+            <span className="font-bold text-slate-400">{t.footer.title}</span>
           </div>
           <div>
-            Built with Embedded AI Engine • Arabic & English Split Layout • 3D Book Animation
+            {t.footer.text}
           </div>
         </div>
       </footer>
@@ -201,3 +203,4 @@ export function App() {
 }
 
 export default App;
+
