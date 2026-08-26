@@ -19,19 +19,13 @@ export async function getMetalHammerCeoAdvice({
 }: CeoAdviceParams): Promise<string> {
   const geminiKey = config.apiKey || (import.meta.env.VITE_GEMINI_API_KEY as string);
 
-  if (!geminiKey && config.provider === 'gemini') {
-    return language === 'ar'
-      ? `⚠️ **تنبيه رئيس التحرير**: لم يتم حفظ مفتاح **Google Gemini API Key**. يرجى فتح الإعدادات (⚙️) في أعلى الصفحة، وإدخال مفتاح API الخاص بك والضغط على زر **"حفظ الإعدادات"** لتفعيل الاستشارات الحية فائقة الذكاء!`
-      : `⚠️ **CEO Alert**: Google Gemini API key is not configured. Please click Settings (⚙️) in the top bar, enter your Gemini API Key, and click **"Save Settings"** to unlock live AI design critiques!`;
-  }
-
-  const systemContext = `You are the legendary Chief Editor & CEO of EgyptSlayer Visual Metal Magazine. 
+  // 1. If Gemini API Key exists, perform live intelligent AI call tailored to the specific user question
+  if (geminiKey) {
+    try {
+      const prompt = `You are the legendary Chief Editor & CEO of EgyptSlayer Visual Metal Magazine.
 You possess decades of experience in heavy metal music journalism, cover design, visual typography, album artwork selection, dual-language magazine publishing, and commercial newsstand success secrets.
 
-Your personality:
-- Authoritative, energetic, passionate about heavy metal, highly constructive, and sharp.
-- You give concrete, actionable design & editorial advice.
-- You evaluate magazine layouts like a top-tier visual director.
+Your personality: Authoritative, energetic, passionate about heavy metal, highly constructive, and sharp.
 
 Current Magazine Project Context:
 - Band Name: "${input.bandName || 'EgyptSlayer'}"
@@ -42,30 +36,27 @@ Current Magazine Project Context:
 - Logo Uploaded: ${input.logoUrl ? 'Yes' : 'No'}
 - Album Cover Uploaded: ${input.albumArtUrl ? 'Yes' : 'No'}
 - Band Artwork Fillers Count: ${input.fillerArtUrls.length}
-- Article Content Length: ${input.textArabic ? input.textArabic.length : 0} characters
-- Dual-Language Content Generated: ${generatedContent ? 'Yes' : 'No'}
-- User Active View: "${activeTab}"
+- Article Headline: "${input.titleArabic || 'Untitled'}"
+- Active View Tab: "${activeTab}"
 
-User Language Preference: Respond ENTIRELY in ${language === 'ar' ? 'Arabic (اللغة العربية)' : 'English'}.
+User's Language: Respond ENTIRELY in ${language === 'ar' ? 'Arabic (اللغة العربية)' : 'English'}.
 
-User Prompt / Question: "${userQuery || 'Give me your overall editorial critique and top tips for this magazine.'}"
+User's Specific Question / Request:
+"${userQuery || 'Give me your overall editorial critique and top tips for this magazine.'}"
 
-Provide a structured, beautifully formatted response in Markdown including:
-1. ⭐️ **EgyptSlayer Impact Rating** (e.g. 9.0/10 🔥) with a quick 1-sentence verdict.
-2. 🎨 **Visual & Design Critique** (evaluate chosen layout style "${input.layoutStyle}", artwork count, and cover imagery).
-3. ✍️ **Headline & Editorial Punch** (how to make the band feature irresistible to heavy metal readers).
-4. 📰 **Dual-Language (Arabic RTL & English LTR) Symmetry Advice**.
-5. ⚡ **5 Secrets to Commercial Success** (specific tips for this band's genre and publication layout).`;
+Instructions for your response:
+1. Answer the user's specific question directly as the EgyptSlayer Chief Editor & CEO.
+2. Tailor your advice specifically to the band "${input.bandName || 'EgyptSlayer'}", their genre "${input.genre || 'Oriental Thrash Metal'}", and the current project context provided.
+3. If the user asks a specific question (e.g. about headlines, layout, colors, track breakdown, or reading flow), focus heavily on answering THAT exact question.
+4. Format your response cleanly using Markdown (bold text, bullet points, numbered lists, and relevant heavy metal emojis).`;
 
-  if (geminiKey) {
-    try {
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: systemContext }] }]
+            contents: [{ parts: [{ text: prompt }] }]
           })
         }
       );
@@ -76,84 +67,96 @@ Provide a structured, beautifully formatted response in Markdown including:
         return rawText;
       }
     } catch (err) {
-      console.warn('Gemini API call failed for CEO Advisor:', err);
+      console.warn('Gemini API call failed for CEO Advisor, falling back to offline advisor:', err);
     }
   }
 
-  // Builtin fallback critique if API key is not active or offline
-  return getBuiltinCeoCritique(input, generatedContent, language);
+  // 2. If provider is set to Gemini but key is missing, warn the user
+  if (!geminiKey && config.provider === 'gemini') {
+    return language === 'ar'
+      ? `⚠️ **تنبيه رئيس التحرير**: لم يتم حفظ مفتاح **Google Gemini API Key**. يرجى فتح الإعدادات (⚙️) في أعلى الصفحة، وإدخال مفتاح API الخاص بك والضغط على زر **"حفظ الإعدادات"** لتفعيل الاستشارات الحية فائقة الذكاء!`
+      : `⚠️ **CEO Alert**: Google Gemini API key is not configured. Please click Settings (⚙️) in the top bar, enter your Gemini API Key, and click **"Save Settings"** to unlock live AI design critiques!`;
+  }
+
+  // 3. Smart Offline Fallback with Query-Specific Matching
+  return getBuiltinCeoCritique(input, generatedContent, userQuery, language);
 }
 
 function getBuiltinCeoCritique(
   input: ArticleInput,
   generatedContent: DualLanguageContent | null,
+  userQuery: string | undefined,
   language: 'en' | 'ar'
 ): string {
   const band = input.bandName || 'EgyptSlayer';
   const album = input.albumTitle || 'Dominion of Osiris';
   const layout = input.layoutStyle || 'wide-header';
+  const q = (userQuery || '').toLowerCase();
 
-  if (language === 'ar') {
-    return `⭐️ **تقييم رئيس تحرير إيجيبت سلاير: 9.0/10 🔥**
+  // Query: Cover / Headline
+  if (q.includes('cover') || q.includes('headline') || q.includes('عنوان') || q.includes('غلاف')) {
+    if (language === 'ar') {
+      return `🎸 **استشارة رئيس التحرير حول غلاف المقال والعنوان الرئيسية:**
 
-معاينة ممتازة لفرقة **${band}** وألبوم **${album}**! إليك التقييم التحريري والفني الشامل:
+1. **عنوان المقال الرئيسي**: عنوان مثل **"${input.titleArabic || `صعود ${band}`}"** يحتاج إلى خط عريض وحاد (Gothic/Cairo Bold) في أعلى المنتصف.
+2. **بروز صورة الألبوم**: ${input.albumArtUrl ? 'غلاف الألبوم مرفوع حالياً بنجاح! نوصي بتخصيص كادر أحمر داكن لزيادة الهيبة البصرية.' : '⚠️ ننصح برفع صورة غلاف الألبوم بدقة عالية لزيادة التفاعل الإعلاني.'}
+3. **الاقتباس المركزي**: ضع جملة مستفزّة من حوار الفرقة بخط مائل في المنتصف لزيادة معدل بقاء القارئ بنسبة 40%.`;
+    }
+    return `🎸 **Executive Critique: Cover & Headline Punch:**
 
----
-
-### 🎨 1. تحليل التصميم وإخراج الصفحة (Layout: ${layout})
-- **القالب المختار (${layout})**: يعطي انطباعاً صحفياً عريقاً يشبه المجلات العالمية.
-- **غلاف الألبوم واللوجو**: ${input.albumArtUrl ? 'تم رفع صورة الألبوم بنجاح مما يمنح المقال طابعاً بصرياً جذاباً.' : 'ننصح برفع صورة غلاف الألبوم بدقة عالية لزيادة الجاذبية البصرية.'}
-- **فواصل الصور الفنية**: لديك حالياً **${input.fillerArtUrls.length}** صور فنية فاصلة، وهو ممتاز لإعطاء قارئ المجلة استراحة بصرية فاخرة.
-
----
-
-### ✍️ 2. العناوين والنص الصحفي
-- **عنوان المقال**: "صعود ${band} في عالم الميتال" ينبغي أن يكون بخط عريض وحاد يبرز في منتصف الصفحة.
-- **الاقتباس البارز (Pull Quote)**: أضف اقتباساً مستفزاً من مغني الفرقة لزيادة الفضول.
-
----
-
-### 📰 3. التناسق بين العربية والإنجليزية
-- التنسيق المزدوج (العربية على اليمين RTL والإنجليزية على اليسار LTR) هو الورقة الرابحة لمجلتك! حافظ على توازي طول الأعمدة لتكون القراءة سلسة للمتابعين العرب والأجانب.
-
----
-
-### ⚡ 4. ٥ أسرار ذهبية لنجاح المجلة تجارياً:
-1. **الصورة القيادية**: اجعل صورة غلاف الألبوم تحتل الأولوية البصرية في أعلى المنتصف.
-2. **التباين اللوني**: استخدم تباين الأسود والأحمر الدموي للفرقة لتحقيق أقصى درجات الطاقة.
-3. **تفاصيل المعدات الصوتية**: اذكر نوع الجيتارات والدرامز في فقرة المراجعة لجذب الموسيقيين المحترفين.
-4. **تاريخ الحفلات**: أضف أسماء المدن التي شهدت أشد ميتال مادي (Mosh Pits).
-5. **شعار التوثيق**: استخدم الختم الفضي لمجلة إيجيبت سلاير كضمانة لجودة النقد.`;
+1. **Headline Typography**: Make sure **"${input.titleArabic || `Rise of ${band}`}"** uses high-contrast bold typography at the top.
+2. **Album Artwork Framing**: ${input.albumArtUrl ? 'Album cover is mounted! Use a dark crimson border frame to accentuate the imagery.' : '⚠️ Pro Tip: Upload a high-res album cover picture to command visual authority.'}
+3. **Pull-Quote Hook**: Place a sharp, visceral quote from the band right in the central column to increase reader retention by 40%.`;
   }
 
-  return `⭐️ **EgyptSlayer CEO Impact Rating: 9.0/10 🔥**
+  // Query: Reading Flow / Dual Language
+  if (q.includes('reading') || q.includes('flow') || q.includes('arabic') || q.includes('قراءة') || q.includes('عربي') || q.includes('إنجليزية')) {
+    if (language === 'ar') {
+      return `📰 **استشارة رئيس التحرير حول تناسق القراءة ثنائية اللغة:**
 
-Sensational work on **${band}** and their release **"${album}"**! Here is my official executive layout & editorial breakdown:
+1. **التنسيق المزدوج (RTL / LTR)**: الجانب الأيمن مخصص للغة العربية (من اليمين لليسار) والجانب الأيسر للغة الإنجليزية (من اليسار لليمين).
+2. **توازي طول الأعمدة**: تأكد من أن عدد أسطر الفقرات العربية يتساوى ببراعة مع النص الإنجليزي المقابل لمنع الفراغات البصرية.
+3. **الهوامش التحريرية**: يمنح الخط الفاصل في المنتصف توازناً يضاهي أشهر مجلات الميتال العالمية.`;
+    }
+    return `📰 **Executive Critique: Dual-Language (Arabic/English) Reading Flow:**
 
----
+1. **Split-Column Balance**: Right side Arabic (RTL) and Left side English (LTR) create a unique international magazine feel.
+2. **Column Height Parity**: Ensure body paragraph line-counts mirror each other to eliminate awkward white space.
+3. **Center Spine Margin**: The vertical divider line keeps both translations distinct yet cohesive.`;
+  }
 
-### 🎨 1. Visual & Page Layout Critique (Preset: ${layout})
-- **Selected Layout Style (${layout})**: Provides a punchy, classic EgyptSlayer newsstand aesthetic.
-- **Album Artwork**: ${input.albumArtUrl ? 'Album cover artwork is properly mounted, giving high visual authority.' : 'Pro Tip: Upload a high-res album cover picture to instantly boost visual engagement.'}
-- **Separator Artworks**: You currently have **${input.fillerArtUrls.length}** full-bleed artworks acting as visual chapter separators.
+  // Query: 5 Secrets
+  if (q.includes('secrets') || q.includes('golden') || q.includes('أسرار') || q.includes('نجاح')) {
+    if (language === 'ar') {
+      return `🔥 **أسرار رئيس تحرير إيجيبت سلاير الـ ٥ لنجاح المجلة تجارياً:**
 
----
+1. **التباين البصري الصارم**: دمج الأسود والأحمر الدموي مع خلفية الورق الكلاسيكية يعطي طابعاً ملكياً ثقيلاً.
+2. **الاهتمام بالتفاصيل التقنية**: اذكر معدات الصوت والتوزيع في فقرة نقد الألبوم لجذب الموسيقيين المحترفين.
+3. **طاقة الحفلات الحية**: خصص فقرة مستقلة لوصف تفاعل الجماهير في الـ Mosh Pits.
+4. **توقيت المقطوعات**: أضف دقيقة وثانية كل أغنية في جدول المقطوعات لإضفاء التوثيق الاحترافي.
+5. **ختم التحرير**: احتفظ بختم EgyptSlayer التحريري الفضي على كنز الصفحات المزدوجة.`;
+    }
+    return `🔥 **5 Golden Secrets for Commercial Magazine Success:**
 
-### ✍️ 2. Headline & Editorial Punch
-- **Headline Impact**: Ensure "${band}" stands out with thick serif/gothic typography.
-- **Pull Quote**: Highlighting a visceral band quote in the center column increases page retention by 40%.
+1. **High Visual Contrast**: Dark blood-red aesthetics paired with crisp paper backgrounds command newsstand authority.
+2. **Technical Production Specs**: Always highlight studio mixing/mastering details for audio purists.
+3. **Live Show Intensity**: Dedicate a section to stage energy and mosh pit dynamics.
+4. **Track Breakdown Timestamps**: Include exact duration timestamps and highlight riffs for each song.
+5. **Executive Editorial Seal**: Maintain the official EgyptSlayer stamp on every spread.`;
+  }
 
----
+  // Default / Layout Critique
+  if (language === 'ar') {
+    return `⭐️ **تقييم رئيس تحرير إيجيبت سلاير لمشروع فرقة ${band}: 9.0/10 🔥**
 
-### 📰 3. Dual-Language Symmetry
-- The split Arabic (RTL) right side and English (LTR) left side setup is world-class. Ensure body text heights match across both columns.
+1. **شكل الصفحة الحالي (${layout})**: تنسيق صحفي ممتاز يناسب مجلات الميتال العالمية.
+2. **الصور الفنية الفاصلة**: تحتوي مجلتك حالياً على **${input.fillerArtUrls.length}** صور فاصلة.
+3. **نصيحة حاسمة**: للإجابة المباشرة على أي سؤال مخصص، تأكد من حفظ **Gemini API Key** في الإعدادات لتفعيل المحادثة الذكية الفورية!`;
+  }
 
----
+  return `⭐️ **EgyptSlayer Chief Editor Impact Rating for ${band}: 9.0/10 🔥**
 
-### ⚡ 4. 5 Golden Secrets for Commercial Success:
-1. **Visual Contrast**: Dark blood-red aesthetics paired with crisp paper backgrounds command authority.
-2. **Production Specs**: Always highlight mixing/mastering studio details for audio purists.
-3. **Live Gig Energy**: Include live stage highlights to capture fan devotion.
-4. **Track Highlights**: Feature duration timestamps and key riff moments.
-5. **Executive Seal**: Maintain the official EgyptSlayer editorial stamp on all spreads.`;
+1. **Active Layout Style (${layout})**: Delivers a classic, high-impact heavy metal magazine aesthetic.
+2. **Artwork Separators**: You currently have **${input.fillerArtUrls.length}** full-bleed chapter separators.
+3. **Pro Tip**: To get custom answers for open-ended questions, ensure your **Gemini API Key** is saved in Settings!`;
 }
