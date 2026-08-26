@@ -25,7 +25,7 @@ export async function getMetalHammerCeoAdvice({
       : `⚠️ **CEO Alert**: Google Gemini API key is not configured. Please click Settings (⚙️) in the top bar, enter your Gemini API Key, and click **"Save Settings"** to unlock live AI design critiques!`;
   }
 
-  const systemContext = `You are the legendary Chief Editor & CEO of Metal Hammer Magazine. 
+  const systemContext = `You are the legendary Chief Editor & CEO of EgyptSlayer Visual Metal Magazine. 
 You possess decades of experience in heavy metal music journalism, cover design, visual typography, album artwork selection, dual-language magazine publishing, and commercial newsstand success secrets.
 
 Your personality:
@@ -51,7 +51,7 @@ User Language Preference: Respond ENTIRELY in ${language === 'ar' ? 'Arabic (ا�
 User Prompt / Question: "${userQuery || 'Give me your overall editorial critique and top tips for this magazine.'}"
 
 Provide a structured, beautifully formatted response in Markdown including:
-1. ⭐️ **Metal Hammer Impact Rating** (e.g. 8.5/10 🔥) with a quick 1-sentence verdict.
+1. ⭐️ **EgyptSlayer Impact Rating** (e.g. 9.0/10 🔥) with a quick 1-sentence verdict.
 2. 🎨 **Visual & Design Critique** (evaluate chosen layout style "${input.layoutStyle}", artwork count, and cover imagery).
 3. ✍️ **Headline & Editorial Punch** (how to make the band feature irresistible to heavy metal readers).
 4. 📰 **Dual-Language (Arabic RTL & English LTR) Symmetry Advice**.
@@ -94,7 +94,7 @@ function getBuiltinCeoCritique(
   const layout = input.layoutStyle || 'wide-header';
 
   if (language === 'ar') {
-    return `⭐️ **تقييم رئيس تحرير ميتال هامر: 9.0/10 🔥**
+    return `⭐️ **تقييم رئيس تحرير إيجيبت سلاير: 9.0/10 🔥**
 
 معاينة ممتازة لفرقة **${band}** وألبوم **${album}**! إليك التقييم التحريري والفني الشامل:
 
@@ -126,14 +126,14 @@ function getBuiltinCeoCritique(
 5. **شعار التوثيق**: استخدم الختم الفضي لمجلة إيجيبت سلاير كضمانة لجودة النقد.`;
   }
 
-  return `⭐️ **Metal Hammer CEO Impact Rating: 9.0/10 🔥**
+  return `⭐️ **EgyptSlayer CEO Impact Rating: 9.0/10 🔥**
 
 Sensational work on **${band}** and their release **"${album}"**! Here is my official executive layout & editorial breakdown:
 
 ---
 
 ### 🎨 1. Visual & Page Layout Critique (Preset: ${layout})
-- **Selected Layout Style (${layout})**: Provides a punchy, classic Metal Hammer newsstand aesthetic.
+- **Selected Layout Style (${layout})**: Provides a punchy, classic EgyptSlayer newsstand aesthetic.
 - **Album Artwork**: ${input.albumArtUrl ? 'Album cover artwork is properly mounted, giving high visual authority.' : 'Pro Tip: Upload a high-res album cover picture to instantly boost visual engagement.'}
 - **Separator Artworks**: You currently have **${input.fillerArtUrls.length}** full-bleed artworks acting as visual chapter separators.
 
