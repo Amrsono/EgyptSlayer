@@ -156,6 +156,8 @@ export function App() {
           <MagazineEditor
             input={articleInput}
             setInput={setArticleInput}
+            generatedContent={generatedContent}
+            setGeneratedContent={setGeneratedContent}
             onGenerate={() => handleGenerateContent()}
             isGenerating={isGenerating}
           />

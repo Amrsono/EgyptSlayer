@@ -59,6 +59,23 @@ export interface Translations {
     addUrlButton: string;
     generateButton: string;
     generatingButton: string;
+    manualTranslationHeader: string;
+    manualTranslationSub: string;
+    toggleManualEdit: string;
+    titleEnLabel: string;
+    titleArLabel: string;
+    subtitleEnLabel: string;
+    subtitleArLabel: string;
+    bandBioEnLabel: string;
+    bandBioArLabel: string;
+    albumAnalysisEnLabel: string;
+    albumAnalysisArLabel: string;
+    gigReviewEnLabel: string;
+    gigReviewArLabel: string;
+    pullQuoteEnLabel: string;
+    pullQuoteArLabel: string;
+    verdictEnLabel: string;
+    verdictArLabel: string;
   };
   flipbook: {
     spreadPrefix: string;
@@ -178,6 +195,23 @@ export const translations: Record<Language, Translations> = {
       addUrlButton: 'Add URL',
       generateButton: 'Generate 3D Animated Metal Magazine',
       generatingButton: 'AI Generating Metal Magazine...',
+      manualTranslationHeader: 'Manual Translation & Content Editor (Takeover Mode)',
+      manualTranslationSub: 'Freely override and edit English and Arabic translations for real-time live preview update.',
+      toggleManualEdit: 'Manual Editor Takeover',
+      titleEnLabel: 'English Headline Title',
+      titleArLabel: 'Arabic Headline Title',
+      subtitleEnLabel: 'English Subtitle',
+      subtitleArLabel: 'Arabic Subtitle',
+      bandBioEnLabel: 'English Band History & Bio',
+      bandBioArLabel: 'Arabic Band History & Bio',
+      albumAnalysisEnLabel: 'English Album Analysis',
+      albumAnalysisArLabel: 'Arabic Album Analysis',
+      gigReviewEnLabel: 'English Live Show Review',
+      gigReviewArLabel: 'Arabic Live Show Review',
+      pullQuoteEnLabel: 'English Pull Quote',
+      pullQuoteArLabel: 'Arabic Pull Quote',
+      verdictEnLabel: 'English Verdict',
+      verdictArLabel: 'Arabic Verdict',
     },
     flipbook: {
       spreadPrefix: 'Spread',
@@ -295,6 +329,23 @@ export const translations: Record<Language, Translations> = {
       addUrlButton: 'إضافة رابط',
       generateButton: 'توليد مجلة الميتال التفاعلية 3D',
       generatingButton: 'جاري توليد المجلة بواسطة الذكاء الاصطناعي...',
+      manualTranslationHeader: 'محرر الترجمة والمحتوى المباشر (التعديل اليدوي الحر)',
+      manualTranslationSub: 'قم بتعديل النصوص والترجمات بين الإنجليزية والعربية بحرية تامة مع تحديث فوري للمجلة.',
+      toggleManualEdit: 'التحكم والتعديل اليدوي',
+      titleEnLabel: 'العنوان الرئيسي (بالإنجليزية)',
+      titleArLabel: 'العنوان الرئيسي (بالعربية)',
+      subtitleEnLabel: 'العنوان الفرعي (بالإنجليزية)',
+      subtitleArLabel: 'العنوان الفرعي (بالعربية)',
+      bandBioEnLabel: 'نبذة وتاريخ الفرقة (بالإنجليزية)',
+      bandBioArLabel: 'نبذة وتاريخ الفرقة (بالعربية)',
+      albumAnalysisEnLabel: 'تحليل الألبوم والإنتاج (بالإنجليزية)',
+      albumAnalysisArLabel: 'تحليل الألبوم والإنتاج (بالعربية)',
+      gigReviewEnLabel: 'تغطية الحفلات المباشرة (بالإنجليزية)',
+      gigReviewArLabel: 'تغطية الحفلات المباشرة (بالعربية)',
+      pullQuoteEnLabel: 'الاقتباس البارز (بالإنجليزية)',
+      pullQuoteArLabel: 'الاقتباس البارز (بالعربية)',
+      verdictEnLabel: 'التقييم النهائي (بالإنجليزية)',
+      verdictArLabel: 'التقييم النهائي (بالعربية)',
     },
     flipbook: {
       spreadPrefix: 'الصفحة المزدوجة',

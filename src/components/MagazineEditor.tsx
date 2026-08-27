@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { ArticleInput, PageLayoutType } from '../types/magazine';
-import { Upload, Sparkles, Image as ImageIcon, Music, Trash2, Plus, Flame, FileText, Globe, LayoutGrid } from 'lucide-react';
+import { ArticleInput, DualLanguageContent, PageLayoutType } from '../types/magazine';
+import { Upload, Sparkles, Image as ImageIcon, Music, Trash2, Plus, Flame, FileText, Globe, LayoutGrid, Edit3, Languages, Sliders, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface MagazineEditorProps {
   input: ArticleInput;
   setInput: (input: ArticleInput) => void;
+  generatedContent: DualLanguageContent | null;
+  setGeneratedContent: React.Dispatch<React.SetStateAction<DualLanguageContent | null>>;
   onGenerate: () => void;
   isGenerating: boolean;
 }
@@ -58,14 +60,25 @@ const LAYOUT_OPTIONS: { id: PageLayoutType; titleAr: string; titleEn: string; de
 export const MagazineEditor: React.FC<MagazineEditorProps> = ({
   input,
   setInput,
+  generatedContent,
+  setGeneratedContent,
   onGenerate,
   isGenerating
 }) => {
   const [newFillerUrl, setNewFillerUrl] = useState('');
+  const [isManualEditActive, setIsManualEditActive] = useState(true);
   const { t, language } = useLanguage();
 
   const handleInputChange = (field: keyof ArticleInput, value: any) => {
     setInput({ ...input, [field]: value });
+  };
+
+  const handleTranslationChange = (field: keyof DualLanguageContent, value: any) => {
+    if (!generatedContent) return;
+    setGeneratedContent({
+      ...generatedContent,
+      [field]: value
+    });
   };
 
   const handleFileUpload = (field: 'logoUrl' | 'albumArtUrl', file: File) => {
@@ -402,6 +415,237 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
           </button>
 
         </div>
+      </div>
+
+      {/* ---------------------------------------------------- */}
+      {/* MANUAL TRANSLATION & CONTENT EDITOR (TAKEOVER MODE)  */}
+      {/* ---------------------------------------------------- */}
+      <div className="metal-border p-6 rounded-2xl space-y-6 mt-8">
+        <div className="flex flex-wrap justify-between items-center gap-4 border-b border-metal-800 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-amber-950/80 border border-amber-800/80 text-amber-400">
+              <Languages className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base font-black text-amber-200 uppercase tracking-wide flex items-center gap-2">
+                {t.editor.manualTranslationHeader}
+                <span className="px-2 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-800 text-[10px] font-mono">
+                  LIVE TAKEOVER
+                </span>
+              </h3>
+              <p className="text-xs text-slate-400">
+                {t.editor.manualTranslationSub}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsManualEditActive(!isManualEditActive)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                isManualEditActive
+                  ? 'bg-red-900 text-white shadow-metal-glow'
+                  : 'bg-metal-800 text-slate-300 hover:bg-metal-700'
+              }`}
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              {t.editor.toggleManualEdit}
+            </button>
+          </div>
+        </div>
+
+        {isManualEditActive && (
+          <div>
+            {!generatedContent ? (
+              <div className="p-6 text-center space-y-3 bg-metal-950/80 rounded-xl border border-metal-800">
+                <Sliders className="w-8 h-8 text-amber-400 mx-auto animate-pulse" />
+                <p className="text-sm font-bold text-slate-300">
+                  {language === 'ar'
+                    ? 'انقر على "توليد المجلة" أو ابدأ التعديل اليدوي المباشر الآن لتعديل جميع الترجمات والنصوص بحرية'
+                    : 'Click "Generate Metal Magazine" or initialize manual editing to edit all translations and content.'}
+                </p>
+                <button
+                  type="button"
+                  onClick={onGenerate}
+                  className="px-5 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-red-600 to-amber-600 text-white shadow-metal-glow hover:brightness-110 cursor-pointer"
+                >
+                  {t.editor.generateButton}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-6 pt-2">
+                
+                {/* 1. Main Titles & Subtitles */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-metal-950/60 p-4 rounded-xl border border-metal-800">
+                  {/* English Headline */}
+                  <div>
+                    <label className="block text-xs font-semibold text-amber-400 mb-1">{t.editor.titleEnLabel}</label>
+                    <input
+                      type="text"
+                      dir="ltr"
+                      value={generatedContent.titleEn || ''}
+                      onChange={(e) => handleTranslationChange('titleEn', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-100 focus:border-red-600 outline-none"
+                    />
+                  </div>
+                  {/* Arabic Headline */}
+                  <div>
+                    <label className="block text-xs font-semibold text-amber-400 mb-1">{t.editor.titleArLabel}</label>
+                    <input
+                      type="text"
+                      dir="rtl"
+                      value={generatedContent.titleAr || ''}
+                      onChange={(e) => handleTranslationChange('titleAr', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm font-arabic text-slate-100 focus:border-red-600 outline-none"
+                    />
+                  </div>
+
+                  {/* English Subtitle */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.subtitleEnLabel}</label>
+                    <input
+                      type="text"
+                      dir="ltr"
+                      value={generatedContent.subtitleEn || ''}
+                      onChange={(e) => handleTranslationChange('subtitleEn', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-200 focus:border-red-600 outline-none"
+                    />
+                  </div>
+                  {/* Arabic Subtitle */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.subtitleArLabel}</label>
+                    <input
+                      type="text"
+                      dir="rtl"
+                      value={generatedContent.subtitleAr || ''}
+                      onChange={(e) => handleTranslationChange('subtitleAr', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm font-arabic text-slate-200 focus:border-red-600 outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Band History & Bio */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-metal-950/60 p-4 rounded-xl border border-metal-800">
+                  <div>
+                    <label className="block text-xs font-semibold text-red-400 mb-1">{t.editor.bandBioEnLabel}</label>
+                    <textarea
+                      rows={4}
+                      dir="ltr"
+                      value={generatedContent.bandBioEn || ''}
+                      onChange={(e) => handleTranslationChange('bandBioEn', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-200 leading-relaxed focus:border-red-600 outline-none resize-y"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-red-400 mb-1">{t.editor.bandBioArLabel}</label>
+                    <textarea
+                      rows={4}
+                      dir="rtl"
+                      value={generatedContent.bandBioAr || ''}
+                      onChange={(e) => handleTranslationChange('bandBioAr', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm font-arabic text-slate-200 leading-relaxed focus:border-red-600 outline-none resize-y"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Album Analysis & Production */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-metal-950/60 p-4 rounded-xl border border-metal-800">
+                  <div>
+                    <label className="block text-xs font-semibold text-amber-400 mb-1">{t.editor.albumAnalysisEnLabel}</label>
+                    <textarea
+                      rows={4}
+                      dir="ltr"
+                      value={generatedContent.albumAnalysisEn || ''}
+                      onChange={(e) => handleTranslationChange('albumAnalysisEn', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-200 leading-relaxed focus:border-red-600 outline-none resize-y"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-amber-400 mb-1">{t.editor.albumAnalysisArLabel}</label>
+                    <textarea
+                      rows={4}
+                      dir="rtl"
+                      value={generatedContent.albumAnalysisAr || ''}
+                      onChange={(e) => handleTranslationChange('albumAnalysisAr', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm font-arabic text-slate-200 leading-relaxed focus:border-red-600 outline-none resize-y"
+                    />
+                  </div>
+                </div>
+
+                {/* 4. Live Show Performance */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-metal-950/60 p-4 rounded-xl border border-metal-800">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.gigReviewEnLabel}</label>
+                    <textarea
+                      rows={3}
+                      dir="ltr"
+                      value={generatedContent.gigReviewEn || ''}
+                      onChange={(e) => handleTranslationChange('gigReviewEn', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-200 leading-relaxed focus:border-red-600 outline-none resize-y"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1">{t.editor.gigReviewArLabel}</label>
+                    <textarea
+                      rows={3}
+                      dir="rtl"
+                      value={generatedContent.gigReviewAr || ''}
+                      onChange={(e) => handleTranslationChange('gigReviewAr', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm font-arabic text-slate-200 leading-relaxed focus:border-red-600 outline-none resize-y"
+                    />
+                  </div>
+                </div>
+
+                {/* 5. Pull Quote & Verdict */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-metal-950/60 p-4 rounded-xl border border-metal-800">
+                  <div>
+                    <label className="block text-xs font-semibold text-amber-400 mb-1">{t.editor.pullQuoteEnLabel}</label>
+                    <input
+                      type="text"
+                      dir="ltr"
+                      value={generatedContent.pullQuoteEn || ''}
+                      onChange={(e) => handleTranslationChange('pullQuoteEn', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-200 focus:border-red-600 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-amber-400 mb-1">{t.editor.pullQuoteArLabel}</label>
+                    <input
+                      type="text"
+                      dir="rtl"
+                      value={generatedContent.pullQuoteAr || ''}
+                      onChange={(e) => handleTranslationChange('pullQuoteAr', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm font-arabic text-slate-200 focus:border-red-600 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-red-400 mb-1">{t.editor.verdictEnLabel}</label>
+                    <input
+                      type="text"
+                      dir="ltr"
+                      value={generatedContent.verdictEn || ''}
+                      onChange={(e) => handleTranslationChange('verdictEn', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm text-slate-200 focus:border-red-600 outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-red-400 mb-1">{t.editor.verdictArLabel}</label>
+                    <input
+                      type="text"
+                      dir="rtl"
+                      value={generatedContent.verdictAr || ''}
+                      onChange={(e) => handleTranslationChange('verdictAr', e.target.value)}
+                      className="w-full bg-metal-950 border border-metal-800 rounded-lg p-2.5 text-sm font-arabic text-slate-200 focus:border-red-600 outline-none"
+                    />
+                  </div>
+                </div>
+
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -196,23 +196,44 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
           </div>
         )}
 
-        {/* 2. CENTERED EDITORIAL HEADLINE & SUBTITLE */}
+        {/* 2. CENTERED EDITORIAL HEADLINE & SUBTITLE WITH ENLARGED LOGO */}
         {layoutStyle !== 'full-image' && (
-          <div className="text-center space-y-2 pb-4 border-b border-black/15">
-            {/* English Main Title */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#111111] tracking-tight leading-none uppercase font-serif">
+          <div className="text-center space-y-3 pb-5 border-b border-black/15">
+            {/* Band Logo Image (if provided) */}
+            {input.logoUrl && (
+              <div className="flex justify-center mb-3">
+                <img
+                  src={input.logoUrl}
+                  alt={`${input.bandName} Logo`}
+                  className="max-h-28 sm:max-h-36 max-w-[340px] w-auto h-auto object-contain filter drop-shadow-md"
+                />
+              </div>
+            )}
+
+            {/* Band Name Logo (150% - 200% Bigger Font Size) */}
+            <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black text-[#111111] tracking-tight leading-none uppercase font-serif drop-shadow-sm">
               {headlineEnglish}
             </h1>
 
-            {/* Subtitle / Intro Lead */}
-            <p className="text-base sm:text-lg font-bold text-gray-800 font-serif italic max-w-3xl mx-auto pt-1 leading-snug">
-              {subtitleEnglish}
-            </p>
+            {/* Article Heading Block (Right Below Logo on Same Alignment) */}
+            <div className="space-y-1.5 pt-2">
+              {/* Arabic Main Article Heading */}
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-red-900 font-arabic max-w-4xl mx-auto leading-relaxed">
+                {headlineArabic}
+              </h2>
 
-            {/* Arabic Main Headline */}
-            <p className="text-sm sm:text-base font-bold text-red-900 font-arabic max-w-3xl mx-auto pt-1 leading-relaxed">
-              {headlineArabic}
-            </p>
+              {/* English Subtitle / Lead Heading */}
+              <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 font-serif italic max-w-4xl mx-auto leading-snug">
+                {subtitleEnglish}
+              </p>
+
+              {/* Arabic Subtitle (if available) */}
+              {subtitleArabic && (
+                <p className="text-base sm:text-lg font-semibold text-gray-700 font-arabic max-w-4xl mx-auto pt-0.5 leading-relaxed">
+                  {subtitleArabic}
+                </p>
+              )}
+            </div>
           </div>
         )}
 
