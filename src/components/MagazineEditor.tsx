@@ -310,7 +310,7 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
               <div className="flex items-center gap-4">
                 {input.albumArtUrl ? (
                   <div className="relative w-24 h-24 bg-metal-950 rounded-lg border border-red-800 p-1 flex items-center justify-center overflow-hidden">
-                    <img src={input.albumArtUrl} alt="Album Art" className="w-full h-full object-cover rounded" />
+                    <img src={input.albumArtUrl} alt="Album Art" className="max-w-full max-h-full object-contain rounded" />
                     <button
                       onClick={() => handleInputChange('albumArtUrl', null)}
                       className="absolute -top-2 -right-2 p-1 rounded-full bg-red-600 text-white text-xs hover:bg-red-700"
@@ -350,8 +350,8 @@ export const MagazineEditor: React.FC<MagazineEditorProps> = ({
             {/* Existing Fillers Grid */}
             <div className="grid grid-cols-3 gap-3">
               {input.fillerArtUrls.map((url, idx) => (
-                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-slate-800 bg-metal-950">
-                  <img src={url} alt={`Filler ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-slate-800 bg-metal-950 p-1 flex items-center justify-center">
+                  <img src={url} alt={`Filler ${idx + 1}`} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform" />
                   <button
                     onClick={() => removeFillerUrl(idx)}
                     className="absolute top-1 right-1 p-1 bg-red-900/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"

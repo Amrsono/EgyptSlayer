@@ -36,13 +36,13 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
           <span>ARTWORK GALLERY</span>
         </div>
 
-        {/* Center Artwork Box with Distress Border Effect */}
-        <div className="my-auto py-4 flex flex-col items-center justify-center space-y-4">
-          <div className="w-full max-h-[720px] overflow-hidden rounded-sm shadow-md border border-black/20 p-1 bg-white">
+        {/* Center Artwork Box with Auto-Adjusting Fit */}
+        <div className="my-auto py-4 flex flex-col items-center justify-center space-y-4 w-full">
+          <div className="w-full max-h-[720px] flex items-center justify-center rounded-sm shadow-md border border-black/20 p-2 bg-[#0d0d0d] overflow-hidden">
             <img
               src={fillerImageUrl}
               alt="Band Visual Divider"
-              className="w-full h-full object-cover max-h-[700px] grayscale contrast-125 hover:contrast-100 transition-all duration-500"
+              className="max-h-[700px] max-w-full w-auto h-auto object-contain grayscale contrast-125 hover:contrast-100 transition-all duration-500 rounded-sm"
             />
           </div>
           <div className="text-center pt-1">
@@ -187,8 +187,12 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
 
         {/* 1. LAYOUT OPTION: image-above-title (Full Width Top Image -> Centered Title -> Columns) */}
         {layoutStyle === 'image-above-title' && input.albumArtUrl && (
-          <div className="w-full max-h-[380px] overflow-hidden rounded-sm border border-black/20 shadow-md p-1 bg-white mb-2">
-            <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-64 sm:h-80 object-cover filter contrast-105" />
+          <div className="w-full max-h-[380px] flex items-center justify-center overflow-hidden rounded-sm border border-black/20 shadow-md p-2 bg-[#111111]/5 mb-2">
+            <img
+              src={input.albumArtUrl}
+              alt={input.albumTitle}
+              className="max-h-[360px] max-w-full w-auto h-auto object-contain filter contrast-105 rounded-sm"
+            />
           </div>
         )}
 
@@ -214,8 +218,12 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
 
         {/* 3. LAYOUT OPTION: wide-header (Title -> Wide Image -> 2 Columns) */}
         {layoutStyle === 'wide-header' && input.albumArtUrl && (
-          <div className="w-full overflow-hidden rounded-sm border border-black/20 shadow-md p-1 bg-white my-2">
-            <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-56 sm:h-72 object-cover filter contrast-105" />
+          <div className="w-full max-h-[340px] flex items-center justify-center overflow-hidden rounded-sm border border-black/20 shadow-md p-2 bg-[#111111]/5 my-2">
+            <img
+              src={input.albumArtUrl}
+              alt={input.albumTitle}
+              className="max-h-[320px] max-w-full w-auto h-auto object-contain filter contrast-105 rounded-sm"
+            />
           </div>
         )}
 
@@ -226,8 +234,12 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
               {headlineEnglish}
             </h1>
             {input.albumArtUrl && (
-              <div className="w-full max-w-2xl h-[680px] overflow-hidden rounded-sm border border-black/20 shadow-md p-1 bg-white">
-                <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-full object-cover" />
+              <div className="w-full max-w-2xl max-h-[680px] flex items-center justify-center overflow-hidden rounded-sm border border-black/20 shadow-md p-2 bg-[#111111]/5">
+                <img
+                  src={input.albumArtUrl}
+                  alt={input.albumTitle}
+                  className="max-h-[660px] max-w-full w-auto h-auto object-contain rounded-sm"
+                />
               </div>
             )}
           </div>
@@ -240,8 +252,12 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
               
               {/* Optional Tall Image on Right Side */}
               {layoutStyle === 'tall-right' && input.albumArtUrl && (
-                <div className="w-full h-64 overflow-hidden rounded-sm mb-4 border border-black/20 shadow-md p-1 bg-white">
-                  <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-full object-cover" />
+                <div className="w-full max-h-72 flex items-center justify-center overflow-hidden rounded-sm mb-4 border border-black/20 shadow-md p-2 bg-[#111111]/5">
+                  <img
+                    src={input.albumArtUrl}
+                    alt={input.albumTitle}
+                    className="max-h-64 max-w-full w-auto h-auto object-contain rounded-sm"
+                  />
                 </div>
               )}
 
@@ -266,8 +282,12 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
               
               {/* Optional Tall Image on Left Side */}
               {layoutStyle === 'tall-left' && input.albumArtUrl && (
-                <div className="w-full h-64 overflow-hidden rounded-sm mb-4 border border-black/20 shadow-md p-1 bg-white">
-                  <img src={input.albumArtUrl} alt={input.albumTitle} className="w-full h-full object-cover" />
+                <div className="w-full max-h-72 flex items-center justify-center overflow-hidden rounded-sm mb-4 border border-black/20 shadow-md p-2 bg-[#111111]/5">
+                  <img
+                    src={input.albumArtUrl}
+                    alt={input.albumTitle}
+                    className="max-h-64 max-w-full w-auto h-auto object-contain rounded-sm"
+                  />
                 </div>
               )}
 
