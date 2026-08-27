@@ -75,6 +75,12 @@ export interface Translations {
   spread: {
     title: string;
     subtitle: string;
+    viewSingle: string;
+    viewAll: string;
+    prevPage: string;
+    nextPage: string;
+    pagePrefix: string;
+    pageOf: string;
   };
   toast: {
     preparing: string;
@@ -188,6 +194,12 @@ export const translations: Record<Language, Translations> = {
     spread: {
       title: 'DUAL-LANGUAGE SPREAD PREVIEW',
       subtitle: 'Full-bleed side-by-side Arabic (RTL) & English (LTR) layout',
+      viewSingle: 'Single Page View',
+      viewAll: 'View All Pages Stacked',
+      prevPage: 'Previous Page',
+      nextPage: 'Next Page',
+      pagePrefix: 'Page',
+      pageOf: 'of',
     },
     toast: {
       preparing: 'Preparing magazine layout for export...',
@@ -299,6 +311,12 @@ export const translations: Record<Language, Translations> = {
     spread: {
       title: 'معاينة الصفحة المزدوجة ثنائية اللغة',
       subtitle: 'تنسيق متقابل يجمع بين اللغة العربية (RTL) والإنجليزية (LTR)',
+      viewSingle: 'عرض صفحة واحدة',
+      viewAll: 'عرض جميع الصفحات متتالية',
+      prevPage: 'الصفحة السابقة',
+      nextPage: 'الصفحة التالية',
+      pagePrefix: 'صفحة',
+      pageOf: 'من',
     },
     toast: {
       preparing: 'جاري تجهيز تصميم المجلة للتصدير...',

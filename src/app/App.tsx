@@ -7,6 +7,7 @@ import { Navbar } from '../components/Navbar';
 import { MagazineEditor } from '../components/MagazineEditor';
 import { FlipbookViewer } from '../components/FlipbookViewer';
 import { MagazineSpread } from '../components/MagazineSpread';
+import { MagazineSpreadViewer } from '../components/MagazineSpreadViewer';
 import { MetalHammerCeoDrawer } from '../components/MetalHammerCeoDrawer';
 import { Sparkles, Download, Flame, CheckCircle, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -169,20 +170,10 @@ export function App() {
         )}
 
         {activeTab === 'spread' && (
-          <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-            <div className="text-center space-y-2">
-              <h2 className="text-3xl font-black metal-title">{t.spread.title}</h2>
-              <p className="text-xs text-slate-400 font-mono">{t.spread.subtitle}</p>
-            </div>
-            
-            <div id="magazine-spread-container">
-              <MagazineSpread
-                content={generatedContent || {} as any}
-                input={articleInput}
-                pageType="article-1"
-              />
-            </div>
-          </div>
+          <MagazineSpreadViewer
+            content={generatedContent}
+            input={articleInput}
+          />
         )}
 
         {/* OFFSCREEN FULL MAGAZINE RENDER CONTAINER FOR HIGH-RES PORTRAIT PDF EXPORT FROM ANY TAB */}
