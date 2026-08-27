@@ -45,6 +45,25 @@ export async function exportMagazineToPDF(
     const progressPercent = Math.round(15 + ((i + 1) / pageElements.length) * 80);
     onProgress?.(progressPercent, `Rendering High-Res Arabic Page ${i + 1} of ${pageElements.length}...`);
 
+    // Ensure all images inside pageEl are fully loaded and decoded
+    const images = Array.from(pageEl.querySelectorAll('img'));
+    await Promise.all(
+      images.map(async (img) => {
+        if (img.complete && img.naturalWidth !== 0) {
+          try {
+            await img.decode();
+          } catch (e) {
+            // fallback
+          }
+          return;
+        }
+        return new Promise((resolve) => {
+          img.onload = () => resolve(null);
+          img.onerror = () => resolve(null);
+        });
+      })
+    );
+
     let imgData: string;
     try {
       // Primary renderer: html-to-image (uses native browser rendering for 100% connected Arabic letters & ligatures)
@@ -54,6 +73,10 @@ export async function exportMagazineToPDF(
         backgroundColor: '#ffffff',
         filter: (element: HTMLElement) => !element.classList?.contains('no-export'),
         cacheBust: true,
+        style: {
+          transform: 'none',
+          margin: '0',
+        }
       });
     } catch (renderErr) {
       console.warn(`Page ${i + 1} html-to-image warning, attempting html2canvas fallback:`, renderErr);

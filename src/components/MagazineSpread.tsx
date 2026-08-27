@@ -15,11 +15,11 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
   input,
   pageType = 'article-1',
   fillerImageUrl,
-  pageNumber = 22,
+  pageNumber = 1,
   isPdfMode = true
 }) => {
   const layoutStyle: PageLayoutType = input.layoutStyle || 'wide-header';
-  const effectivePageNum = pageNumber || 22;
+  const effectivePageNum = pageNumber || 1;
 
   // ----------------------------------------------------
   // FILLER / BAND ARTWORK PAGE (CLEAN EDITORIAL PAPER STYLE)
@@ -47,10 +47,10 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
           </div>
           <div className="text-center pt-1">
             <h3 className="text-2xl font-black tracking-widest text-[#111111] uppercase font-serif">
-              {input.bandName.toUpperCase()}
+              {(input.bandName || 'EGYPTSLAYER').toUpperCase()}
             </h3>
             <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest pt-1">
-              {input.albumTitle} • EXCLUSIVE VISUAL GALLERY
+              {input.albumTitle || 'SPECIAL RELEASE'} • EXCLUSIVE VISUAL GALLERY
             </p>
           </div>
         </div>
@@ -65,12 +65,117 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
   }
 
   // ----------------------------------------------------
-  // ARTICLE PAGE (EDITORIAL PRINT MAGAZINE AESTHETIC)
+  // ARTICLE PAGE 2: ALBUM ANALYSIS & TRACK BREAKDOWN
   // ----------------------------------------------------
-  const headlineArabic = content.titleAr || input.titleArabic;
-  const headlineEnglish = content.titleEn || input.bandName.toUpperCase();
-  const subtitleArabic = content.subtitleAr;
-  const subtitleEnglish = content.subtitleEn;
+  if (pageType === 'article-2') {
+    return (
+      <div
+        style={{ fontFamily: "'Cairo', 'Amiri', 'Georgia', serif" }}
+        className="magazine-page-render w-full min-h-[1050px] bg-[#f7f6f2] text-[#111111] p-8 sm:p-12 shadow-2xl relative flex flex-col justify-between border border-gray-300/80"
+      >
+        <div className="flex-1 flex flex-col justify-between space-y-6">
+          
+          {/* Sub-Header Title */}
+          <div className="text-center space-y-2 pb-4 border-b border-black/15">
+            <h2 className="text-3xl sm:text-4xl font-black text-[#111111] tracking-tight uppercase font-serif">
+              {(input.bandName || 'EGYPTSLAYER').toUpperCase()} — {(input.albumTitle || 'ALBUM REVIEW').toUpperCase()}
+            </h2>
+            <p className="text-xs sm:text-sm font-bold text-red-800 font-sans uppercase tracking-widest">
+              EDITORIAL DEEP-DIVE • ALBUM ANALYSIS & PRODUCTION
+            </p>
+          </div>
+
+          {/* 2-COLUMN DUAL LANGUAGE SECOND SPREAD */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 flex-1 items-start pt-2">
+            
+            {/* RIGHT COLUMN: ARABIC DEEP-DIVE (RTL) */}
+            <div dir="rtl" className="space-y-4 font-arabic text-[13px] sm:text-[14px] text-[#1a1a1a] leading-[1.75] text-justify border-b md:border-b-0 md:border-l border-black/15 pl-0 md:pl-8">
+              {content?.albumAnalysisAr && (
+                <div className="space-y-2">
+                  <h3 className="font-black text-sm text-[#000000] border-b border-black/10 pb-1">تحليل الألبوم وتفاصيل الإنتاج:</h3>
+                  <p className="leading-[1.75]">{content.albumAnalysisAr}</p>
+                </div>
+              )}
+
+              {content?.gigReviewAr && (
+                <div className="space-y-2 pt-2">
+                  <h3 className="font-black text-sm text-[#000000] border-b border-black/10 pb-1">تفاصيل الحفلات المباشرة والتفاعل:</h3>
+                  <p className="leading-[1.75]">{content.gigReviewAr}</p>
+                </div>
+              )}
+
+              {/* Track Highlights */}
+              {content?.tracks && content.tracks.length > 0 && (
+                <div className="pt-3 border-t border-black/15 mt-4">
+                  <h4 className="font-black text-xs uppercase mb-2 text-[#111111]">أبرز مقطوعات الألبوم:</h4>
+                  <div className="space-y-1.5 text-xs">
+                    {content.tracks.map((tr) => (
+                      <div key={tr.number} className="flex justify-between border-b border-gray-300 pb-1">
+                        <span className="font-bold text-[#111111]">{tr.number}. {tr.titleArabic || tr.title}</span>
+                        <span className="font-mono text-gray-600 text-[11px]">{tr.duration}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* LEFT COLUMN: ENGLISH DEEP-DIVE (LTR) */}
+            <div dir="ltr" className="space-y-4 font-serif text-[13px] sm:text-[14px] text-[#1a1a1a] leading-[1.75] text-justify">
+              
+              {/* Band Metadata & Logo Box */}
+              <div className="p-3.5 bg-black/5 rounded-sm border border-black/15 space-y-2 font-sans text-[11px]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-black text-xs uppercase text-[#111111]">{input.bandName} — {input.albumTitle}</div>
+                    <div className="text-gray-700">{input.genre} • {input.origin} ({input.formedYear})</div>
+                  </div>
+                  {input.logoUrl && (
+                    <img src={input.logoUrl} alt="Logo" className="h-8 max-w-[80px] object-contain" />
+                  )}
+                </div>
+                <div className="font-bold text-[#111111] pt-0.5 flex justify-between">
+                  <span>Rating: {input.rating} / 5 Stars</span>
+                  <span>EGYPTSLAYER APPROVED</span>
+                </div>
+              </div>
+
+              {content?.albumAnalysisEn && (
+                <div className="space-y-1">
+                  <strong className="font-sans font-black text-[#000000] text-xs uppercase tracking-wider block">ALBUM ANALYSIS & PRODUCTION</strong>
+                  <p className="leading-[1.75]">{content.albumAnalysisEn}</p>
+                </div>
+              )}
+
+              {content?.gigReviewEn && (
+                <div className="space-y-1 pt-2">
+                  <strong className="font-sans font-black text-[#000000] text-xs uppercase tracking-wider block">LIVE SHOW PERFORMANCE</strong>
+                  <p className="leading-[1.75]">{content.gigReviewEn}</p>
+                </div>
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Minimalist Editorial Footer */}
+        <div className="pt-3 mt-6 border-t border-black/15 flex justify-between items-center text-[11px] font-sans font-bold text-[#111111] uppercase tracking-wider">
+          <span>{effectivePageNum} | EGYPTSLAYER MAGAZINE</span>
+          <span className="text-gray-600 font-semibold">{input.bandName} REVIEW & TRACKS</span>
+        </div>
+      </div>
+    );
+  }
+
+  // ----------------------------------------------------
+  // ARTICLE PAGE 1: PRIMARY FEATURE COVER & LAYOUT
+  // ----------------------------------------------------
+  const headlineArabic = input.titleArabic || content?.titleAr || 'مقالة إيجيبت سلاير';
+  const headlineEnglish = (input.bandName || 'EGYPTSLAYER').toUpperCase();
+  const subtitleArabic = content?.subtitleAr;
+  const subtitleEnglish = content?.subtitleEn || `${input.albumTitle} • EXCLUSIVE FEATURE`;
+  const bodyTextArabic = input.textArabic || content?.bandBioAr || '';
 
   return (
     <div
@@ -87,24 +192,23 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
           </div>
         )}
 
-        {/* 2. CENTERED EDITORIAL HEADLINE & SUBTITLE (150% Larger) */}
+        {/* 2. CENTERED EDITORIAL HEADLINE & SUBTITLE */}
         {layoutStyle !== 'full-image' && (
           <div className="text-center space-y-2 pb-4 border-b border-black/15">
-            {/* English Main Title - Heavy Bold Magazine Typography */}
+            {/* English Main Title */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#111111] tracking-tight leading-none uppercase font-serif">
               {headlineEnglish}
             </h1>
 
             {/* Subtitle / Intro Lead */}
             <p className="text-base sm:text-lg font-bold text-gray-800 font-serif italic max-w-3xl mx-auto pt-1 leading-snug">
-              {subtitleEnglish || headlineArabic}
+              {subtitleEnglish}
             </p>
 
-            {subtitleArabic && (
-              <p className="text-xs sm:text-sm font-semibold text-gray-700 font-arabic italic max-w-3xl mx-auto pt-1 leading-relaxed">
-                {subtitleArabic}
-              </p>
-            )}
+            {/* Arabic Main Headline */}
+            <p className="text-sm sm:text-base font-bold text-red-900 font-arabic max-w-3xl mx-auto pt-1 leading-relaxed">
+              {headlineArabic}
+            </p>
           </div>
         )}
 
@@ -142,48 +246,19 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
               )}
 
               {/* Arabic Pull Quote */}
-              {content.pullQuoteAr && (
+              {content?.pullQuoteAr && (
                 <div className="p-3.5 my-3 border-r-4 border-black bg-black/5 italic font-bold text-[#111111] text-xs sm:text-sm leading-relaxed">
                   "{content.pullQuoteAr}"
                 </div>
               )}
 
-              {/* Arabic Interview / Article Body Paragraphs */}
+              {/* Arabic Article Body */}
               <div className="space-y-3.5">
                 <p className="first-letter:text-3xl font-normal leading-[1.75]">
                   <strong className="font-black text-[#000000]">نبذة الفرقة والتأثير الموسيقي: </strong>
-                  {content.bandBioAr || input.textArabic}
+                  {bodyTextArabic}
                 </p>
-                
-                {content.albumAnalysisAr && (
-                  <p className="leading-[1.75]">
-                    <strong className="font-black text-[#000000]">تحليل الألبوم وتفاصيل الإنتاج: </strong>
-                    {content.albumAnalysisAr}
-                  </p>
-                )}
-                
-                {content.gigReviewAr && (
-                  <p className="leading-[1.75]">
-                    <strong className="font-black text-[#000000]">تفاصيل الحفلات المباشرة والتفاعل: </strong>
-                    {content.gigReviewAr}
-                  </p>
-                )}
               </div>
-
-              {/* Track Highlights */}
-              {content.tracks && content.tracks.length > 0 && (
-                <div className="pt-3 border-t border-black/15 mt-4">
-                  <h4 className="font-black text-xs uppercase mb-2 text-[#111111]">أبرز مقطوعات الألبوم:</h4>
-                  <div className="space-y-1 text-xs">
-                    {content.tracks.slice(0, 3).map((tr) => (
-                      <div key={tr.number} className="flex justify-between border-b border-gray-300 pb-1">
-                        <span className="font-bold text-[#111111]">{tr.number}. {tr.titleArabic || tr.title}</span>
-                        <span className="font-mono text-gray-600 text-[11px]">{tr.duration}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* LEFT COLUMN: ENGLISH CONTENT (LTR) */}
@@ -197,39 +272,32 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
               )}
 
               {/* Band Metadata Box */}
-              <div className="p-3 bg-black/5 rounded-sm border border-black/15 space-y-1 font-sans text-[11px]">
-                <div className="font-black text-xs uppercase text-[#111111]">{input.bandName} — {input.albumTitle}</div>
-                <div className="text-gray-700">{input.genre} • {input.origin} ({input.formedYear})</div>
+              <div className="p-3.5 bg-black/5 rounded-sm border border-black/15 space-y-1.5 font-sans text-[11px]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-black text-xs uppercase text-[#111111]">{input.bandName} — {input.albumTitle}</div>
+                    <div className="text-gray-700">{input.genre} • {input.origin} ({input.formedYear})</div>
+                  </div>
+                  {input.logoUrl && (
+                    <img src={input.logoUrl} alt="Logo" className="h-8 max-w-[80px] object-contain" />
+                  )}
+                </div>
                 <div className="font-bold text-[#111111] pt-0.5">Rating: {input.rating} / 5 Stars</div>
               </div>
 
               {/* English Pull Quote */}
-              {content.pullQuoteEn && (
+              {content?.pullQuoteEn && (
                 <div className="p-3.5 my-3 border-l-4 border-black bg-black/5 italic font-bold text-[#111111] text-xs sm:text-sm leading-relaxed font-serif">
                   "{content.pullQuoteEn}"
                 </div>
               )}
 
-              {/* English Interview / Article Body Paragraphs */}
+              {/* English Bio / Article Body Paragraphs */}
               <div className="space-y-3.5">
-                {content.bandBioEn && (
+                {content?.bandBioEn && (
                   <p className="leading-[1.75]">
                     <strong className="font-sans font-black text-[#000000] text-xs uppercase tracking-wider block mb-0.5">BAND HISTORY & SOUND IMPACT</strong>
                     {content.bandBioEn}
-                  </p>
-                )}
-
-                {content.albumAnalysisEn && (
-                  <p className="leading-[1.75]">
-                    <strong className="font-sans font-black text-[#000000] text-xs uppercase tracking-wider block mb-0.5">ALBUM ANALYSIS & PRODUCTION</strong>
-                    {content.albumAnalysisEn}
-                  </p>
-                )}
-
-                {content.gigReviewEn && (
-                  <p className="leading-[1.75]">
-                    <strong className="font-sans font-black text-[#000000] text-xs uppercase tracking-wider block mb-0.5">LIVE SHOW PERFORMANCE</strong>
-                    {content.gigReviewEn}
                   </p>
                 )}
               </div>
@@ -240,7 +308,7 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
 
       </div>
 
-      {/* 6. MINIMALIST EDITORIAL FOOTER (Matching screenshot: 22 | METAL HAMMER style) */}
+      {/* MINIMALIST EDITORIAL FOOTER */}
       <div className="pt-3 mt-6 border-t border-black/15 flex justify-between items-center text-[11px] font-sans font-bold text-[#111111] uppercase tracking-wider">
         <span>{effectivePageNum} | EGYPTSLAYER MAGAZINE</span>
         <span className="text-gray-600 font-semibold">{input.bandName} FEATURE</span>
@@ -249,3 +317,4 @@ export const MagazineSpread: React.FC<MagazineSpreadProps> = ({
     </div>
   );
 };
+

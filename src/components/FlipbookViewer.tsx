@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DualLanguageContent, ArticleInput } from '../types/magazine';
+import { DualLanguageContent, ArticleInput, getMagazinePageConfigs } from '../types/magazine';
 import { MagazineSpread } from './MagazineSpread';
 import { ChevronLeft, ChevronRight, Volume2, VolumeX, Maximize2, RotateCcw, BookOpen, Flame, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -46,14 +46,9 @@ export const FlipbookViewer: React.FC<FlipbookViewerProps> = ({
     }
   };
 
-  // Construct total array of page spreads
-  const pageSpreads = [
-    { type: 'article-1' as const, label: 'Main Feature & Review' },
-    ...(input.fillerArtUrls[0] ? [{ type: 'filler' as const, fillerUrl: input.fillerArtUrls[0], label: 'Band Artwork Gallery #1' }] : []),
-    { type: 'article-2' as const, label: 'Gig History & Track Breakdown' },
-    ...(input.fillerArtUrls[1] ? [{ type: 'filler' as const, fillerUrl: input.fillerArtUrls[1], label: 'Band Artwork Gallery #2' }] : []),
-    ...(input.fillerArtUrls[2] ? [{ type: 'filler' as const, fillerUrl: input.fillerArtUrls[2], label: 'Band Artwork Gallery #3' }] : []),
-  ];
+  // Construct total array of page spreads using unified helper
+  const pageSpreads = getMagazinePageConfigs(input);
+
 
   const totalPages = pageSpreads.length;
 

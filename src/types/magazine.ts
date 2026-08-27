@@ -80,3 +80,59 @@ export interface AIConfig {
   modelName?: string;
   endpoint?: string;
 }
+
+export interface MagazinePageConfig {
+  id: string;
+  type: 'article-1' | 'article-2' | 'filler';
+  fillerUrl?: string;
+  pageNumber: number;
+  label: string;
+}
+
+export function getMagazinePageConfigs(input: ArticleInput): MagazinePageConfig[] {
+  const pages: MagazinePageConfig[] = [
+    {
+      id: 'article-1',
+      type: 'article-1',
+      pageNumber: 1,
+      label: 'Main Feature & Review',
+    },
+  ];
+
+  let currentPageNum = 2;
+
+  // First artwork separator if available
+  if (input.fillerArtUrls && input.fillerArtUrls[0]) {
+    pages.push({
+      id: 'filler-0',
+      type: 'filler',
+      fillerUrl: input.fillerArtUrls[0],
+      pageNumber: currentPageNum++,
+      label: 'Band Artwork Gallery #1',
+    });
+  }
+
+  // Second article page (Deep-dive review & track breakdown)
+  pages.push({
+    id: 'article-2',
+    type: 'article-2',
+    pageNumber: currentPageNum++,
+    label: 'Gig History & Track Breakdown',
+  });
+
+  // Remaining artwork separators
+  if (input.fillerArtUrls) {
+    for (let i = 1; i < input.fillerArtUrls.length; i++) {
+      pages.push({
+        id: `filler-${i}`,
+        type: 'filler',
+        fillerUrl: input.fillerArtUrls[i],
+        pageNumber: currentPageNum++,
+        label: `Band Artwork Gallery #${i + 1}`,
+      });
+    }
+  }
+
+  return pages;
+}
+

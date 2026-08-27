@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArticleInput, DualLanguageContent, AIConfig } from '../types/magazine';
+import { ArticleInput, DualLanguageContent, AIConfig, getMagazinePageConfigs } from '../types/magazine';
 import { generateMagazineContent } from '../services/aiGenerator';
 import { exportMagazineToPDF } from '../services/pdfExporter';
 import { SAMPLE_METAL_ARTICLE } from '../components/SampleData';
@@ -65,19 +65,15 @@ export function App() {
     setExportProgress({ percent: 5, status: t.toast.preparing });
     
     try {
-      // Ensure content is generated
+      // Ensure content is generated if not available yet
       let content = generatedContent;
       if (!content) {
         setExportProgress({ percent: 15, status: t.toast.generating });
         content = await handleGenerateContent(articleInput);
       }
 
-      if (!content) {
-        throw new Error('Could not generate magazine content for export.');
-      }
-
       // Allow DOM to settle for offscreen render container
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await new Promise((resolve) => setTimeout(resolve, 400));
 
       await exportMagazineToPDF(
         'magazine-export-hidden-container',
@@ -172,7 +168,7 @@ export function App() {
           />
         )}
 
-        {activeTab === 'spread' && generatedContent && (
+        {activeTab === 'spread' && (
           <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
             <div className="text-center space-y-2">
               <h2 className="text-3xl font-black metal-title">{t.spread.title}</h2>
@@ -181,7 +177,7 @@ export function App() {
             
             <div id="magazine-spread-container">
               <MagazineSpread
-                content={generatedContent}
+                content={generatedContent || {} as any}
                 input={articleInput}
                 pageType="article-1"
               />
@@ -190,29 +186,22 @@ export function App() {
         )}
 
         {/* OFFSCREEN FULL MAGAZINE RENDER CONTAINER FOR HIGH-RES PORTRAIT PDF EXPORT FROM ANY TAB */}
-        {generatedContent && (
-          <div
-            id="magazine-export-hidden-container"
-            className="fixed -left-[9999px] top-0 w-[800px] pointer-events-none opacity-100 z-[-100] space-y-12 bg-white"
-          >
+        <div
+          id="magazine-export-hidden-container"
+          className="fixed top-0 left-0 w-[800px] pointer-events-none opacity-100 z-[-9999] space-y-12 bg-white overflow-hidden"
+          style={{ position: 'fixed', top: 0, left: 0, zIndex: -9999, width: '800px' }}
+        >
+          {getMagazinePageConfigs(articleInput).map((page) => (
             <MagazineSpread
-              content={generatedContent}
+              key={page.id}
+              content={generatedContent || {} as any}
               input={articleInput}
-              pageType="article-1"
-              pageNumber={1}
+              pageType={page.type}
+              fillerImageUrl={page.fillerUrl}
+              pageNumber={page.pageNumber}
             />
-            {articleInput.fillerArtUrls.map((url, idx) => (
-              <MagazineSpread
-                key={idx}
-                content={generatedContent}
-                input={articleInput}
-                pageType="filler"
-                fillerImageUrl={url}
-                pageNumber={idx + 2}
-              />
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
       </main>
 
       {/* Footer */}
@@ -233,5 +222,6 @@ export function App() {
 }
 
 export default App;
+
 
 
